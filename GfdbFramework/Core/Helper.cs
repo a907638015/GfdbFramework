@@ -1114,7 +1114,7 @@ namespace GfdbFramework.Core
                         }
                     }
 
-                    convertedField = new ObjectField(objectField.DataType, new ConstructorInfo(objectField.ConstructorInfo.Constructor, arguments), members);
+                    convertedField = new ObjectField(objectField.DataType, new ConstructorInfo(objectField.ConstructorInfo.Constructor, arguments), members, objectField.IsNeededInitMembers);
                 }
                 else if (field.Type == FieldType.Collection)
                 {

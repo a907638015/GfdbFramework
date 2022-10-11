@@ -78,7 +78,7 @@ namespace GfdbFramework.Field
                     members.Add(item.Key, new MemberInfo(item.Value.Member, copiedField));
                 }
 
-                self = new ObjectField(DataType, new ConstructorInfo(_ConstructorInfo.Constructor, constructorParameters), members);
+                self = new ObjectField(DataType, new ConstructorInfo(_ConstructorInfo.Constructor, constructorParameters), members, IsNeededInitMembers);
             }
 
             copiedFields[this] = self;
@@ -121,7 +121,7 @@ namespace GfdbFramework.Field
                     members.Add(item.Key, new MemberInfo(item.Value.Member, copiedField));
                 }
 
-                self = new ObjectField(DataType, new ConstructorInfo(_ConstructorInfo.Constructor, constructorParameters), members);
+                self = new ObjectField(DataType, new ConstructorInfo(_ConstructorInfo.Constructor, constructorParameters), members, IsNeededInitMembers);
             }
 
             convertedFields.Add(this, self);
@@ -139,6 +139,11 @@ namespace GfdbFramework.Field
                 return _ConstructorInfo;
             }
         }
+
+        /// <summary>
+        /// 获取一个值，该值指示在实例化该字段所对应的 .NET 框架类后是否需要初始化 <see cref="Members"/> 属性中所有的成员值。
+        /// </summary>
+        public bool IsNeededInitMembers { get; }
 
         /// <summary>
         /// 获取该对象字段中所有的成员信息。
@@ -163,10 +168,5 @@ namespace GfdbFramework.Field
                 return _Members[memberName].Field;
             }
         }
-
-        /// <summary>
-        /// 获取一个值，该值指示在实例化该字段所对应的 .NET 框架类后是否需要初始化 <see cref="Members"/> 属性中所有的成员值。
-        /// </summary>
-        public bool IsNeededInitMembers { get; }
     }
 }
