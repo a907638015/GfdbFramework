@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net40;net45;net452;net461;net472</TargetFrameworks>
+		<Version>1.0.10</Version>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageProjectUrl></PackageProjectUrl>
+		<RepositoryUrl>https://github.com/a907638015/GfdbFramework</RepositoryUrl>
+		<AssemblyVersion>1.0.10.1</AssemblyVersion>
+		<FileVersion>1.0.10.1</FileVersion>
+		<Authors>Gaofei.Wang</Authors>
+		<Description>一个用以弥补 Linq To Sql 各种先天不足的替补数据库操作框架</Description>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<RepositoryType>应用程序扩展</RepositoryType>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Docs\**" />
+	  <EmbeddedResource Remove="Docs\**" />
+	  <None Remove="Docs\**" />
+	  <None Include="..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
+	</ItemGroup>
+</Project>
