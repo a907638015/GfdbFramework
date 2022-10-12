@@ -23,3 +23,12 @@ DataContext dataContext = new DataContext();
 
 dataContext.CreateTable(dataContext.Users);
 ```
+3. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
+```c#
+DataContext dataContext = new DataContext();
+
+foreach (var item in dataContext.Users)
+{
+    Console.WriteLine(item.Name);
+}
+```
