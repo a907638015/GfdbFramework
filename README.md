@@ -32,3 +32,16 @@ foreach (var item in dataContext.Users)
     Console.WriteLine(item.Name);
 }
 ```
+4. 内连接（查询所有商品名称以及创建该商品的用户名）
+```c#
+var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => new
+{
+    UserName = user.Name,
+    CommodityName = commodity.Name
+}, (commodity, user) => commodity.CreateUID == user.ID);
+
+foreach (var item in data)
+{
+    Console.WriteLine($"商品 {item.CommodityName} 由 {item.UserName} 创建");
+}
+```
