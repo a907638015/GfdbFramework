@@ -11,8 +11,15 @@
 ```c#
 DataContext dataContext = new DataContext();
 
+//默认数据库文件存放在 Databases 目录下
 dataContext.CreateDatabase(new DatabaseInfo()
 {
     Name = "TestDB"
 });
+```
+2. 创建数据表
+```c#
+DataContext dataContext = new DataContext();
+
+dataContext.CreateTable(dataContext.Users);
 ```
