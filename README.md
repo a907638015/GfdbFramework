@@ -1,4 +1,4 @@
-# ![Logo](./Asset/Images/logo.png) GfdbFramework
+# ![Logo](https://github.com/a907638015/GfdbFramework/blob/master/Asset/Images/logo.png) GfdbFramework
 
 [![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/GfdbFramework.svg?style=flat-square)](https://www.nuget.org/packages/GfdbFramework/)
 
