@@ -14,6 +14,7 @@ namespace GfdbFramework.DataSource
         /// <summary>
         /// 使用指定的据操作上下文以及数据源类型初始化一个新的 <see cref="DataSource"/> 类实例。
         /// </summary>
+        /// <param name="dataContext">该数据源所使用的数据操作上下文对象。</param>
         /// <param name="type">该数据源的类型。</param>
         internal DataSource(IDataContext dataContext, DataSourceType type)
         {

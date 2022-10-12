@@ -18,11 +18,11 @@ namespace GfdbFramework.Enum
         /// </summary>
         Framework = 2,
         /// <summary>
-        /// 事务打开（该方式打开的连接应当在 <see cref="Interface.IDatabaseOperation.RollbackTransaction"/> 或 <see cref="Interface.IDatabaseOperation.CommitTransaction"/> 后关闭连接）。
+        /// 事务打开（该方式打开的连接应当在 <see cref="Interface.IDatabaseOperation.RollbackTransaction()"/> 或 <see cref="Interface.IDatabaseOperation.CommitTransaction()"/> 后关闭连接）。
         /// </summary>
         Transaction = 3,
         /// <summary>
-        /// 手动打开（该方式打开的连接只有手动调用 <see cref="Interface.IDatabaseOperation.CloseConnection"/> 方法后才能关闭连接）。
+        /// 手动打开（该方式打开的连接只有手动调用 <see cref="Interface.IDatabaseOperation.CloseConnection()"/> 方法后才能关闭连接）。
         /// </summary>
         Manual = 4
     }

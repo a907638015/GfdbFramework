@@ -10,6 +10,10 @@ namespace GfdbFramework.Attribute
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class FieldAttribute : System.Attribute
     {
+        private int _IncrementSpeed = 1;
+        private int _IncrementSeed = 1;
+        private Enum.SortType _SimpleIndex = 0;
+
         /// <summary>
         /// 初始化一个新的 <see cref="FieldAttribute"/> 类实例。
         /// </summary>
@@ -64,19 +68,54 @@ namespace GfdbFramework.Attribute
         public bool IsNullable { get; set; }
 
         /// <summary>
-        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>）。
+        /// 获取或设置该字段的索引排序方式（若该值不为 0 时表示需要为该成员加上索引）。
         /// </summary>
-        public Enum.SortType? SimpleIndex { get; set; }
+        public Enum.SortType SimpleIndex
+        {
+            get
+            {
+                return _SimpleIndex;
+            }
+            set
+            {
+                _SimpleIndex = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置该字段的校验约束。
+        /// </summary>
+        public string CheckConstraint { get; set; }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段为自增字段时的每次递增量（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
         /// </summary>
-        public int IncrementSpeed { get; set; }
+        public int IncrementSpeed
+        {
+            get
+            {
+                return _IncrementSpeed;
+            }
+            set
+            {
+                _IncrementSpeed = value;
+            }
+        }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段为自增字段时的起始值（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
         /// </summary>
-        public int IncrementSeed { get; set; }
+        public int IncrementSeed
+        {
+            get
+            {
+                return _IncrementSeed;
+            }
+            set
+            {
+                _IncrementSeed = value;
+            }
+        }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段的默认值。

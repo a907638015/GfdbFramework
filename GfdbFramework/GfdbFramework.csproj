@@ -2,12 +2,12 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net40;net45;net452;net461;net472</TargetFrameworks>
-		<Version>1.1.2-bate1</Version>
+		<Version>1.1.5</Version>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageProjectUrl></PackageProjectUrl>
 		<RepositoryUrl>https://github.com/a907638015/GfdbFramework</RepositoryUrl>
-		<AssemblyVersion>1.1.2.1</AssemblyVersion>
-		<FileVersion>1.1.2.1</FileVersion>
+		<AssemblyVersion>1.1.5.1</AssemblyVersion>
+		<FileVersion>1.1.5.1</FileVersion>
 		<Authors>Gaofei.Wang</Authors>
 		<Description>一个用以弥补 Linq To Sql 各种先天不足的替补数据库操作框架</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -15,10 +15,15 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+	  <DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <Compile Remove="Docs\**" />
 	  <EmbeddedResource Remove="Docs\**" />
 	  <None Remove="Docs\**" />
+	  <None Remove="GfdbFramework.xml" />
 	  <None Include="..\LICENSE.md">
 	    <Pack>True</Pack>
 	    <PackagePath></PackagePath>

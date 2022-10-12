@@ -53,7 +53,7 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 使用指定的参数值初始化一个新的 <see cref="ParameterInfo"/> 类实例。
         /// </summary>
-        /// <param name="multipleJoin">该参数对应的参数值。</param>
+        /// <param name="parameter">该参数对应的参数值。</param>
         private ParameterInfo(object parameter)
         {
             IsMain = false;

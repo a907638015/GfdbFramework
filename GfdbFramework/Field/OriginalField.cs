@@ -28,12 +28,14 @@ namespace GfdbFramework.Field
             IsAutoincrement = fieldAttribute.IsAutoincrement;
             IsInsertForDefault = fieldAttribute.IsInsertForDefault;
             IsNullable = fieldAttribute.IsNullable;
-            SimpleIndex = fieldAttribute.SimpleIndex;
+            SimpleIndex = fieldAttribute.SimpleIndex == 0 ? null : (Enum.SortType?)fieldAttribute.SimpleIndex;
             IncrementSpeed = fieldAttribute.IncrementSpeed;
             IncrementSeed = fieldAttribute.IncrementSeed;
             DefaultValue = fieldAttribute.DefaultValue;
             FieldType = fieldAttribute.DataType;
             FieldName = fieldAttribute.Name;
+            Explain = fieldAttribute.Explain;
+            CheckConstraint = fieldAttribute.CheckConstraint;
         }
 
         /// <summary>
@@ -54,6 +56,8 @@ namespace GfdbFramework.Field
             FieldName = originalField.FieldName;
             IsNullable = originalField.IsNullable;
             SimpleIndex = originalField.SimpleIndex;
+            Explain = originalField.Explain;
+            CheckConstraint = originalField.CheckConstraint;
         }
 
         /// <summary>
@@ -87,6 +91,11 @@ namespace GfdbFramework.Field
         public Enum.SortType? SimpleIndex { get; set; }
 
         /// <summary>
+        /// 获取或设置该字段的校验约束。
+        /// </summary>
+        public string CheckConstraint { get; set; }
+
+        /// <summary>
         /// 获取一个值，该值表示当前字段为自增字段时的每次递增量（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
         /// </summary>
         public int IncrementSpeed { get; }
@@ -110,6 +119,11 @@ namespace GfdbFramework.Field
         /// 获取当前数据字段的名称。
         /// </summary>
         public string FieldName { get; }
+
+        /// <summary>
+        /// 获取当前数据字段的描述说明文字。
+        /// </summary>
+        public string Explain { get; }
 
         /// <summary>
         /// 以当前字段为蓝本复制出一个一样的字段信息。

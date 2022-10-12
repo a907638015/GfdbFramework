@@ -173,7 +173,7 @@ namespace GfdbFramework.Realize
         /// <summary>
         /// 将 <see cref="List{T}"/> 类型对象隐式转换成 <see cref="ReadOnlyList{T}"/> 类型。
         /// </summary>
-        /// <param name="list">待转换的集合对象。</param>
+        /// <param name="dictionary">待转换的集合对象。</param>
         public static implicit operator ReadOnlyDictionary<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
         {
             return new ReadOnlyDictionary<TKey, TValue>(dictionary);

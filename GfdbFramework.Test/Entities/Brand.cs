@@ -8,7 +8,6 @@ namespace GfdbFramework.Test.Entities
     /// <summary>
     /// 商品品牌实体类。
     /// </summary>
-    [Index(Fields = new string[] { "ss", "ss" })]
     [Mapping("Brands")]
     public class Brand : BaseEntity
     {

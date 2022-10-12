@@ -13,6 +13,7 @@ namespace GfdbFramework.Core
     /// <summary>
     /// 可修改的多表关联操作类。
     /// </summary>
+    /// <typeparam name="TFirstSource">关联对象中最左侧数据源中的原始成员类型。</typeparam>
     /// <typeparam name="TLeftSource">左数据源中的原始成员类型</typeparam>
     /// <typeparam name="TLeftSelect">左数据源中的每个成员类型</typeparam>
     /// <typeparam name="TJoinSource">右数据源中的原始成员类型</typeparam>
@@ -23,7 +24,7 @@ namespace GfdbFramework.Core
         /// 使用指定的操作上下文、左侧关联对象、右侧关联对象、关联条件字段以及关联类型初始化一个新的 <see cref="MultipleJoin{TLeftSource, TLeftSelect, TJoinSource, TJoinSelect}"/> 类实例。
         /// </summary>
         /// <param name="dataContext">所使用的操作上下文对象。</param>
-        /// <param name="right">需要关联左侧对象的数据源信息。</param>
+        /// <param name="left">需要关联的左侧对象。</param>
         /// <param name="right">需要关联右侧对象的数据源信息。</param>
         /// <param name="on">左右两侧关联的条件字段。</param>
         /// <param name="joinType">关联类型。</param>
@@ -116,6 +117,8 @@ namespace GfdbFramework.Core
         /// <typeparam name="TRightSelect">右数据源中的每个成员类型。</typeparam>
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
+        /// <param name="joinType">关联类型。</param>
+        /// <param name="existentParameters">调用该方法时已经传入的参数集合。</param>
         /// <returns>关联操作后新的操作对象。</returns>
         internal override MultipleJoin Join<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, LambdaExpression on, DataSourceType joinType, Interface.IReadOnlyDictionary<string, ParameterInfo> existentParameters)
         {

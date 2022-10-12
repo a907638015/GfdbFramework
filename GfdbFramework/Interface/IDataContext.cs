@@ -106,8 +106,23 @@ namespace GfdbFramework.Interface
         /// <summary>
         /// 创建数据表（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
         /// </summary>
-        /// <param name="dataSource">带创建数据表对应的源信息。</param>
+        /// <typeparam name="TSource">待创建数据表所映射的实体类型。</typeparam>
+        /// <param name="modifiable">待创建数据表对应的可修改对象。</param>
         /// <returns>创建成功返回 true，否则返回 false。</returns>
-        bool CreateTable(DataSource.OriginalDataSource dataSource);
+        bool CreateTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
+
+        /// <summary>
+        /// 校验指定的数据库是否存在。
+        /// </summary>
+        /// <param name="databaseName">需要确认是否存在的数据库名称。</param>
+        /// <returns>若该数据库已存在则返回 true，否则返回 false。</returns>
+        bool ExistsDatabase(string databaseName);
+
+        /// <summary>
+        /// 校验指定的数据表是否存在。
+        /// </summary>
+        /// <param name="modifiable">需要确认的数据表所映射的可修改对象。</param>
+        /// <returns>若该数据表已存在则返回 true，否则返回 false。</returns>
+        bool ExistsTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
     }
 }

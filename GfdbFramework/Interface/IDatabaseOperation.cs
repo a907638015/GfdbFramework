@@ -103,11 +103,25 @@ namespace GfdbFramework.Interface
         bool CreateDatabase(Core.DatabaseInfo databaseInfo);
 
         /// <summary>
+        /// 校验指定的数据库是否存在。
+        /// </summary>
+        /// <param name="databaseName">需要确认是否存在的数据库名称。</param>
+        /// <returns>若该数据库已存在则返回 true，否则返回 false。</returns>
+        bool ExistsDatabase(string databaseName);
+
+        /// <summary>
         /// 创建数据表（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
         /// </summary>
         /// <param name="dataSource">带创建数据表对应的源信息。</param>
         /// <returns>创建成功返回 true，否则返回 false。</returns>
         bool CreateTable(DataSource.OriginalDataSource dataSource);
+
+        /// <summary>
+        /// 校验指定的数据表是否存在。
+        /// </summary>
+        /// <param name="tableName">需要确认是否存在的数据表名称。</param>
+        /// <returns>若该数据表已存在则返回 true，否则返回 false。</returns>
+        bool ExistsTable(string tableName);
 
         /// <summary>
         /// 打开数据库的连接通道。
@@ -116,7 +130,7 @@ namespace GfdbFramework.Interface
         bool OpenConnection();
 
         /// <summary>
-        /// 打开数据库的连接通道（此方法不建议在框架外部调用，外部要手动打开连接直接调用 <see cref="OpenConnection"/> 方法即可，无需传递连接打开方式）。
+        /// 打开数据库的连接通道（此方法不建议在框架外部调用，外部要手动打开连接直接调用 <see cref="OpenConnection()"/> 方法即可，无需传递连接打开方式）。
         /// </summary>
         /// <param name="openedMode">连接打开方式。</param>
         /// <returns>打开成功返回 true，否则返回 false。</returns>
@@ -129,7 +143,7 @@ namespace GfdbFramework.Interface
         bool CloseConnection();
 
         /// <summary>
-        /// 关闭数据库的连接通道（此方法不建议在框架外部调用，外部要手动关闭连接直接调用 <see cref="CloseConnection"/> 方法即可，无需传递允许关闭的连接打开模式。
+        /// 关闭数据库的连接通道（此方法不建议在框架外部调用，外部要手动关闭连接直接调用 <see cref="CloseConnection()"/> 方法即可，无需传递允许关闭的连接打开模式。
         /// </summary>
         /// <param name="openedMode">允许关闭的连接打开模式。</param>
         /// <returns>关闭成功返回 true，否则返回 false。</returns>

@@ -94,7 +94,7 @@ namespace GfdbFramework.DataSource
 
                                         do
                                         {
-                                            indexName = string.Format("AutoIndexName{0}", i);
+                                            indexName = string.Format("AutoIndexName{0}", i++);
                                         } while (names.Contains(indexName));
                                     }
 
@@ -119,7 +119,7 @@ namespace GfdbFramework.DataSource
 
                                     do
                                     {
-                                        indexName = string.Format("SimpleIndexName{0}", i);
+                                        indexName = string.Format("SimpleIndexName{0}", i++);
                                     } while (names.Contains(indexName));
 
                                     names.Add(indexName);

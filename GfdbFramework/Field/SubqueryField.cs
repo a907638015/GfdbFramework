@@ -14,9 +14,10 @@ namespace GfdbFramework.Field
     public class SubqueryField : BasicField
     {
         /// <summary>
-        /// 使用指定的字段返回值数据类型以及一个作为子查询的数据源初始化一个新的 <see cref="SubqueryField"/> 类实例。
+        /// 使用指定的字段返回值数据类型、所需查询的字段以及一个作为子查询的数据源初始化一个新的 <see cref="SubqueryField"/> 类实例。
         /// </summary>
         /// <param name="dataType">该字段返回值的数据类型。</param>
+        /// <param name="field">该子查询所需查询的字段信息。</param>
         /// <param name="dataSource">作为子查询的数据源。</param>
         internal SubqueryField(Type dataType, BasicField field, BasicDataSource dataSource)
             : base(FieldType.Subquery, dataType)
