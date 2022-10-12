@@ -199,5 +199,25 @@ namespace GfdbFramework.Realize
         {
             _DatabaseOperation.SaveTransaction(pointName);
         }
+
+        /// <summary>
+        /// 创建数据库（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
+        /// </summary>
+        /// <param name="databaseInfo">待创建数据库的信息。</param>
+        /// <returns>创建成功返回 true，否则返回 false。</returns>
+        public bool CreateDatabase(DatabaseInfo databaseInfo)
+        {
+            return _DatabaseOperation.CreateDatabase(databaseInfo);
+        }
+
+        /// <summary>
+        /// 创建数据表（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
+        /// </summary>
+        /// <param name="dataSource">带创建数据表对应的源信息。</param>
+        /// <returns>创建成功返回 true，否则返回 false。</returns>
+        public bool CreateTable(DataSource.OriginalDataSource dataSource)
+        {
+            return _DatabaseOperation.CreateTable(dataSource);
+        }
     }
 }

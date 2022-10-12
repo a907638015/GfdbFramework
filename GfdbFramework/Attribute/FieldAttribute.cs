@@ -14,6 +14,7 @@ namespace GfdbFramework.Attribute
         /// 初始化一个新的 <see cref="FieldAttribute"/> 类实例。
         /// </summary>
         public FieldAttribute()
+            : this(null)
         {
         }
 
@@ -24,6 +25,7 @@ namespace GfdbFramework.Attribute
         public FieldAttribute(string name)
         {
             Name = name;
+            IsNullable = true;
         }
 
         /// <summary>
@@ -55,6 +57,16 @@ namespace GfdbFramework.Attribute
         /// 获取或设置一个值，该值指示在执行自动插入操作时当实体成员的值为默认值时是否将该默认值插入到数据库。
         /// </summary>
         public bool IsInsertForDefault { get; set; }
+
+        /// <summary>
+        /// 获取或设置一个值，该值指示当前成员映射的数据库表或视图字段是否允许为空。
+        /// </summary>
+        public bool IsNullable { get; set; }
+
+        /// <summary>
+        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>，索引命名规则：表名称-字段名-下标）。
+        /// </summary>
+        public Enum.SortType? SimpleIndex { get; set; }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段为自增字段时的每次递增量（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。

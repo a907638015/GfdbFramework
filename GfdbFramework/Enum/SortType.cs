@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 查询结果集排序类型枚举。
+    /// 排序类型枚举。
     /// </summary>
     public enum SortType
     {

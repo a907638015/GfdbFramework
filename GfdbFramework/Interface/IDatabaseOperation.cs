@@ -96,6 +96,20 @@ namespace GfdbFramework.Interface
         void ExecuteReader(string commandText, CommandType commandType, IReadOnlyList<DbParameter> parameters, Func<DbDataReader, bool> readerHandler);
 
         /// <summary>
+        /// 创建数据库（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
+        /// </summary>
+        /// <param name="databaseInfo">待创建数据库的信息。</param>
+        /// <returns>创建成功返回 true，否则返回 false。</returns>
+        bool CreateDatabase(Core.DatabaseInfo databaseInfo);
+
+        /// <summary>
+        /// 创建数据表（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
+        /// </summary>
+        /// <param name="dataSource">带创建数据表对应的源信息。</param>
+        /// <returns>创建成功返回 true，否则返回 false。</returns>
+        bool CreateTable(DataSource.OriginalDataSource dataSource);
+
+        /// <summary>
         /// 打开数据库的连接通道。
         /// </summary>
         /// <returns>打开成功返回 true，否则返回 false。</returns>
