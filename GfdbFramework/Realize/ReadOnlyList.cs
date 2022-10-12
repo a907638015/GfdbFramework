@@ -23,6 +23,15 @@ namespace GfdbFramework.Realize
         }
 
         /// <summary>
+        /// 使用指定的成员数组初始化一个新的 <see cref="ReadOnlyList{T}"/> 类实例。
+        /// </summary>
+        /// <param name="items">该集合所需包含的成员数组。</param>
+        public ReadOnlyList(params T[] items)
+        {
+            _List = items == null ? null : new List<T>(items);
+        }
+
+        /// <summary>
         /// 使用指定的集合初始化一个新的 <see cref="ReadOnlyList{T}"/> 类实例（隐式转换构造函数，隐式转换时将直接引用 <paramref name="list"/> 参数而不会从新构造一个 <see cref="IList{T}"/>）。
         /// </summary>
         /// <param name="list">成员集合。</param>

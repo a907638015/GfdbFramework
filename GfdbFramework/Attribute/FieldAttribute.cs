@@ -64,7 +64,7 @@ namespace GfdbFramework.Attribute
         public bool IsNullable { get; set; }
 
         /// <summary>
-        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>，索引命名规则：表名称-字段名-下标）。
+        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>）。
         /// </summary>
         public Enum.SortType? SimpleIndex { get; set; }
 

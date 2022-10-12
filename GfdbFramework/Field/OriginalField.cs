@@ -27,6 +27,8 @@ namespace GfdbFramework.Field
             IsUnique = fieldAttribute.IsUnique;
             IsAutoincrement = fieldAttribute.IsAutoincrement;
             IsInsertForDefault = fieldAttribute.IsInsertForDefault;
+            IsNullable = fieldAttribute.IsNullable;
+            SimpleIndex = fieldAttribute.SimpleIndex;
             IncrementSpeed = fieldAttribute.IncrementSpeed;
             IncrementSeed = fieldAttribute.IncrementSeed;
             DefaultValue = fieldAttribute.DefaultValue;
@@ -50,6 +52,8 @@ namespace GfdbFramework.Field
             DefaultValue = originalField.DefaultValue;
             FieldType = originalField.FieldType;
             FieldName = originalField.FieldName;
+            IsNullable = originalField.IsNullable;
+            SimpleIndex = originalField.SimpleIndex;
         }
 
         /// <summary>
@@ -71,6 +75,16 @@ namespace GfdbFramework.Field
         /// 获取一个值，该值指示在执行自动插入操作时当该字段所映射实体成员的值为默认值时是否将该默认值插入到数据库。
         /// </summary>
         public bool IsInsertForDefault { get; }
+
+        /// <summary>
+        /// 获取或设置一个值，该值指示当前字段是否允许为空值。
+        /// </summary>
+        public bool IsNullable { get; set; }
+
+        /// <summary>
+        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>）。
+        /// </summary>
+        public Enum.SortType? SimpleIndex { get; set; }
 
         /// <summary>
         /// 获取一个值，该值表示当前字段为自增字段时的每次递增量（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
