@@ -36,7 +36,24 @@ DataContext dataContext = new DataContext();
 
 dataContext.CreateTable(dataContext.Users);
 ```
-3. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
+3. 向 Users 中添加一条用户信息
+```c#
+DataContext dataContext = new DataContext();
+
+Entities.User user = new Entities.User()
+{
+    Account = GetRandomString(16),
+    Password = "123456",
+    Name = GetRandomString(5),
+    CreateTime = DateTime.Now,
+    JobNumber = GetRandomString(5)
+};
+
+ntext.Users.Insert(user);
+
+Console.WriteLine($"新增用户 ID 为：{user.ID}");
+```
+4. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -45,8 +62,10 @@ foreach (var item in dataContext.Users)
     Console.WriteLine(item.Name);
 }
 ```
-4. 内连接（查询所有商品名称以及创建该商品的用户名）
+5. 内连接（查询所有商品名称以及创建该商品的用户名）
 ```c#
+DataContext dataContext = new DataContext();
+
 var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => new
 {
     UserName = user.Name,
