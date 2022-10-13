@@ -77,3 +77,18 @@ foreach (var item in data)
     Console.WriteLine($"商品 {item.CommodityName} 由 {item.UserName} 创建");
 }
 ```
+6. 左外连接（查询所有商品名称以及创建该商品的用户主键 ID）
+```c#
+DataContext dataContext = new DataContext();
+
+var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => new
+{
+    UserID = user.ID.ToNull(),
+    CommodityName = commodity.Name
+}, (commodity, user) => commodity.CreateUID == user.ID);
+
+foreach (var item in data)
+{
+    Console.WriteLine($"商品 【{item.CommodityName}】 由用户 ID 为 【{(item.UserID.HasValue ? item.UserID.Value : 0)}】 的用户创建");
+}
+```
