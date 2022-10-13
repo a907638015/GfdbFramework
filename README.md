@@ -53,7 +53,29 @@ ntext.Users.Insert(user);
 
 Console.WriteLine($"新增用户 ID 为：{user.ID}");
 ```
-4. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
+4. 条件 in （查询创建 波力海苔 以及 人参果 两个商品的用户信息）
+```c#
+DataContext dataContext = new DataContext();
+
+var users = dataContext.Users.Where(user => dataContext.Commodities.Select(commodity => commodity.ID).Where(commodity => commodity.Name == "波力海苔" || commodity.Name == "人参果").Contains(user.ID));
+
+foreach (var item in users)
+{
+    Console.WriteLine($"创建 波力海苔 或 人参果 的用户名称：{item.Name}");
+}
+```
+6. 条件 like （查询商品名称包含 硬壳 的商品信息）
+```c#
+DataContext dataContext = new DataContext();
+
+var commodities = dataContext.Commodities.Where(commodity => commodity.Name.Like("%硬壳%"));
+
+foreach (var item in commodities)
+{
+    Console.WriteLine($"包含 硬壳 的商品名称：{item.Name}");
+}
+```
+7. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
 ```c#
 DataContext dataContext = new DataContext();
 
