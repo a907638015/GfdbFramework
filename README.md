@@ -15,7 +15,7 @@
 | 多数据库支持 | × | √ | GfdbFramework 作者已实现 MSSql、MySql、Sqlite 支持，其他数据库可自行实现支持 |
 | insert ... select ... 语法 | × | √ | GfdbFramework 可直接将查询结果插入到数据库 |
 | delete ... from ... 语法 | × | √ | GfdbFramework 支持关联删除语法 |
-| 实体类复杂度 | ★★★★★ | ✰ | GfdbFramework 支持任意实体类做为映射类，而 Linq To Sql 必须实现各种接口 |
+| 实体类复杂度 | ★★★★★ | ✰ | GfdbFramework 支持任意实体类做为映射类，而 Linq To Sql 必须实现各种接口，且 Linq To Sql 实体类不支持继承 |
 | 手动提交数据修改 | √ | × | GfdbFramework 修改即提交， Linq To Sql 必须频繁调用 SubmitChanges() 方法 |
 | 开源 | × | √ | GfdbFramework 托管于 Github，任何人都可以下载并添加自己想要的功能 |
 | 语义语法 | √ | × | GfdbFramework 不支持语义语法，只支持拉姆达表达式操作，美中不足 |
