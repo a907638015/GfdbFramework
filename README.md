@@ -92,3 +92,14 @@ foreach (var item in data)
     Console.WriteLine($"商品 {item.CommodityName} 由用户 ID 为 {(item.UserID.HasValue ? item.UserID.Value : 0)} 的用户创建");
 }
 ```
+7. 查询插入（新增一条父级分类为化妆品的子分类）
+```c#
+dataContext.Classifies.Insert(dataContext.Classifies.Select(classify => new Entities.Classify()
+{
+    Name = "口红",
+    ParentID = classify.ID,
+    Code = GetRandomString(6),
+    CreateTime = DateTime.Now,
+    CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()
+}).Where(classify => classify.Name == "化妆品"));
+```
