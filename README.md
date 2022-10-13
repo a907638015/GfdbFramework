@@ -151,3 +151,9 @@ dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => commod
     Name = source.Right.Account + source.Left.Name
 }, source => source.Right.Name == "张三");
 ```
+14. 关联删除（将 李四 用户创建的商品删除）
+```c#
+DataContext dataContext = new DataContext();
+
+dataContext.Commodities.InnerJoin(dataContext.Users, (left, right) => left.CreateUID == right.ID).Delete(source => source.Right.Name == "李四");
+```
