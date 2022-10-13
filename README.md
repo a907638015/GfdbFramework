@@ -85,7 +85,7 @@ dataContext.Commodities.Update(new Entities.Commodity()
     Name = "泰国香米"
 }, commodity => commodity.Name == "东北大米");
 ```
-8. 主键修改（将 ID 值为 100 的用户删除）
+8. 主键删除（将 ID 值为 100 的用户删除）
 ```c#
 DataContext dataContext = new DataContext();
 
