@@ -9,7 +9,6 @@
 ## 对比 Linq To Sql
 | 功能点 | Linq To Sql | GfdbFramework | 描述 |
 | :----- | :----: | :----: | :----- |
-| 创建数据库或表 | × | √ | 免去各种初始化数据库的操作 |
 | 直接删除和修改数据 | × | √ | GfdbFramework 可直接修改或插入实体数据，和 ADO.NET 效率一致 |
 | 多数据库支持 | × | √ | GfdbFramework 作者已实现 MSSql、MySql、Sqlite 支持，其他数据库可自行实现支持 |
 | insert ... select ... 语法 | × | √ | GfdbFramework 可直接将查询结果插入到数据库 |
