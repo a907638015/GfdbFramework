@@ -20,7 +20,7 @@
 | 开源 | × | √ | GfdbFramework 托管于 Github，任何人都可以下载并添加自己想要的功能 |
 | 语义语法 | √ | × | GfdbFramework 不支持语义语法，只支持拉姆达表达式操作，美中不足 |
 
-## 使用教程
+## 使用教程（仅包含最常见的用法，更多功能请自行探索）
 1. 创建数据库
 ```c#
 DataContext dataContext = new DataContext();
