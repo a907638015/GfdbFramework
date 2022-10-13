@@ -64,7 +64,7 @@ foreach (var item in users)
     Console.WriteLine($"创建 波力海苔 或 人参果 的用户名称：{item.Name}");
 }
 ```
-6. 条件 like （查询商品名称包含 硬壳 的商品信息）
+5. 条件 like （查询商品名称包含 硬壳 的商品信息）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -74,6 +74,15 @@ foreach (var item in commodities)
 {
     Console.WriteLine($"包含 硬壳 的商品名称：{item.Name}");
 }
+```
+6. 普通修改 （将 东北大米 商品名称改成 泰国香米）
+```c#
+DataContext dataContext = new DataContext();
+
+dataContext.Commodities.Update(new Entities.Commodity()
+{
+    Name = "泰国香米"
+}, commodity => commodity.Name == "东北大米");
 ```
 7. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
 ```c#
