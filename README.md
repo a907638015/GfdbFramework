@@ -75,7 +75,7 @@ foreach (var item in commodities)
     Console.WriteLine($"包含 硬壳 的商品名称：{item.Name}");
 }
 ```
-6. 普通修改 （将 东北大米 商品名称改成 泰国香米）
+6. 普通修改（将 东北大米 商品名称改成 泰国香米）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -84,7 +84,13 @@ dataContext.Commodities.Update(new Entities.Commodity()
     Name = "泰国香米"
 }, commodity => commodity.Name == "东北大米");
 ```
-7. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
+8. 主键修改（将 ID 值为 100 的用户删除）
+```c#
+DataContext dataContext = new DataContext();
+
+dataContext.Users.Delete(100);
+```
+9. 获取 Users 表中所有数据（直接循环该表对应的对象即可，会在首次尝试读取数据时查询表中所有数据）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -93,7 +99,7 @@ foreach (var item in dataContext.Users)
     Console.WriteLine(item.Name);
 }
 ```
-5. 内连接（查询所有商品名称以及创建该商品的用户名）
+10. 内连接（查询所有商品名称以及创建该商品的用户名）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -108,7 +114,7 @@ foreach (var item in data)
     Console.WriteLine($"商品 {item.CommodityName} 由 {item.UserName} 创建");
 }
 ```
-6. 左外连接（查询所有商品名称以及创建该商品的用户主键 ID）
+11. 左外连接（查询所有商品名称以及创建该商品的用户主键 ID）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -123,7 +129,7 @@ foreach (var item in data)
     Console.WriteLine($"商品 {item.CommodityName} 由用户 ID 为 {(item.UserID.HasValue ? item.UserID.Value : 0)} 的用户创建");
 }
 ```
-7. 查询插入（新增一条父级分类为化妆品的子分类）
+12. 查询插入（新增一条父级分类为化妆品的子分类）
 ```c#
 DataContext dataContext = new DataContext();
 
@@ -136,7 +142,7 @@ dataContext.Classifies.Insert(dataContext.Classifies.Select(classify => new Enti
     CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()
 }).Where(classify => classify.Name == "化妆品"));
 ```
-8. 关联修改（将张三创建的商品名称改成 张三的登录账号 + 原有商品名称）
+13. 关联修改（将张三创建的商品名称改成 张三的登录账号 + 原有商品名称）
 ```c#
 DataContext dataContext = new DataContext();
 
