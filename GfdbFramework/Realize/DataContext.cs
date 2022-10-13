@@ -240,5 +240,15 @@ namespace GfdbFramework.Realize
         {
             return _DatabaseOperation.ExistsTable(((DataSource.OriginalDataSource)modifiable.DataSource).Name);
         }
+
+        /// <summary>
+        /// 删除指定的数据表。
+        /// </summary>
+        /// <param name="tableName">待删除数据表对应的可修改对象。</param>
+        /// <returns>删除成功返回 true，否则返回 false。</returns>
+        public bool DeleteTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
+        {
+            return _DatabaseOperation.DeleteTable(((DataSource.OriginalDataSource)modifiable.DataSource).Name);
+        }
     }
 }

@@ -104,12 +104,19 @@ namespace GfdbFramework.Interface
         bool CreateDatabase(DatabaseInfo databaseInfo);
 
         /// <summary>
-        /// 创建数据表（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
+        /// 创建数据表。
         /// </summary>
         /// <typeparam name="TSource">待创建数据表所映射的实体类型。</typeparam>
         /// <param name="modifiable">待创建数据表对应的可修改对象。</param>
         /// <returns>创建成功返回 true，否则返回 false。</returns>
         bool CreateTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
+
+        /// <summary>
+        /// 删除指定的数据表。
+        /// </summary>
+        /// <param name="tableName">待删除数据表对应的可修改对象。</param>
+        /// <returns>删除成功返回 true，否则返回 false。</returns>
+        bool DeleteTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
 
         /// <summary>
         /// 校验指定的数据库是否存在。

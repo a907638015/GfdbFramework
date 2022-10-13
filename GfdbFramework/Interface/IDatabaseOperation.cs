@@ -124,6 +124,13 @@ namespace GfdbFramework.Interface
         bool ExistsTable(string tableName);
 
         /// <summary>
+        /// 删除指定的数据表。
+        /// </summary>
+        /// <param name="tableName">待删除的数据表名称。</param>
+        /// <returns>删除成功返回 true，否则返回 false。</returns>
+        bool DeleteTable(string tableName);
+
+        /// <summary>
         /// 打开数据库的连接通道。
         /// </summary>
         /// <returns>打开成功返回 true，否则返回 false。</returns>
