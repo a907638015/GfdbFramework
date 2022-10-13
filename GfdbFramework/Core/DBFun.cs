@@ -31,6 +31,160 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少天。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的天数。</returns>
+        public static int DiffDay(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少年。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的年数。</returns>
+        public static int DiffYear(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少月。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的月数。</returns>
+        public static int DiffMonth(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少小时。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的小时数。</returns>
+        public static int DiffHour(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少分钟。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的分钟数。</returns>
+        public static int DiffMinute(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少秒。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的秒数。</returns>
+        public static int DiffSecond(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 计算指定日期时间比当前日期时间大多少毫秒。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="compareValue">比较时间参数。</param>
+        /// <returns>指定日期时间大于当前日期时间的毫秒数。</returns>
+        public static int DiffMillisecond(this DateTime self, DateTime compareValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定天数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的天数。</param>
+        /// <returns>在当前时间上添加了指定天数后的一个新时间。</returns>
+        public static DateTime AddDay(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定年数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的年数。</param>
+        /// <returns>在当前时间上添加了指定年数后的一个新时间。</returns>
+        public static DateTime AddYear(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定月数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的月数。</param>
+        /// <returns>在当前时间上添加了指定月数后的一个新时间。</returns>
+        public static DateTime AddMonth(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定小时数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的小时数。</param>
+        /// <returns>在当前时间上添加了指定小时数后的一个新时间。</returns>
+        public static DateTime AddHour(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定分钟数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的分钟数。</param>
+        /// <returns>在当前时间上添加了指定分钟数后的一个新时间。</returns>
+        public static DateTime AddMinute(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定秒数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的秒数。</param>
+        /// <returns>在当前时间上添加了指定秒数后的一个新时间。</returns>
+        public static DateTime AddSecond(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 在当前日期时间上添加指定毫秒数。
+        /// </summary>
+        /// <param name="self">当前日期时间。</param>
+        /// <param name="value">需要添加的毫秒数。</param>
+        /// <returns>在当前时间上添加了指定毫秒数后的一个新时间。</returns>
+        public static DateTime AddMillisecond(this DateTime self, int value)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
         /// 生成一个随机的全球唯一码。
         /// </summary>
         /// <returns>生成好的全球唯一码。</returns>
