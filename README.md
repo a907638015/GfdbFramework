@@ -50,7 +50,7 @@ Entities.User user = new Entities.User()
     JobNumber = "000001"
 };
 
-ntext.Users.Insert(user);
+dataContext.Users.Insert(user);
 
 Console.WriteLine($"新增用户 ID 为：{user.ID}");
 ```
