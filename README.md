@@ -94,6 +94,8 @@ foreach (var item in data)
 ```
 7. 查询插入（新增一条父级分类为化妆品的子分类）
 ```c#
+DataContext dataContext = new DataContext();
+
 dataContext.Classifies.Insert(dataContext.Classifies.Select(classify => new Entities.Classify()
 {
     Name = "口红",
