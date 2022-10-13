@@ -42,11 +42,11 @@ DataContext dataContext = new DataContext();
 
 Entities.User user = new Entities.User()
 {
-    Account = GetRandomString(16),
+    Account = "Admin",
     Password = "123456",
-    Name = GetRandomString(5),
+    Name = "著管理员",
     CreateTime = DateTime.Now,
-    JobNumber = GetRandomString(5)
+    JobNumber = "000001"
 };
 
 ntext.Users.Insert(user);
