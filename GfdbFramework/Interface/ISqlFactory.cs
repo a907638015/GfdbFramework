@@ -148,7 +148,7 @@ namespace GfdbFramework.Interface
         /// <param name="values">需要插入字段对应的值集合。</param>
         /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
         /// <returns>生成好的插入 Sql 语句。</returns>
-        string GenerateInsertSql(IDataContext dataContext, OriginalDataSource dataSource, IReadOnlyList<OriginalField> fields, IReadOnlyList<object> values, out IReadOnlyList<DbParameter> parameters);
+        string GenerateInsertSql(IDataContext dataContext, OriginalDataSource dataSource, IReadOnlyList<OriginalField> fields, IReadOnlyList<BasicField> values, out IReadOnlyList<DbParameter> parameters);
 
         /// <summary>
         /// 生成指定数据表的插入 Sql 语句。

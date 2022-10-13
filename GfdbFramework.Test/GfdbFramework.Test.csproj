@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GfdbFramework.SqlServer" Version="1.0.10" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="GfdbFramework.SqlServer" Version="1.1.9-bate3" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GfdbFramework\GfdbFramework.csproj" />

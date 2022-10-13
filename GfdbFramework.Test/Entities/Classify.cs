@@ -19,11 +19,13 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该商品分类的唯一代码。
         /// </summary>
+        [Field(IsNullable = false, SimpleIndex = Enum.SortType.Ascending)]
         public string Code { get; set; }
 
         /// <summary>
         /// 获取或设置该分类的上级分类主键值。
         /// </summary>
+        [Field(SimpleIndex = Enum.SortType.Ascending)]
         public int ParentID { get; set; }
     }
 }

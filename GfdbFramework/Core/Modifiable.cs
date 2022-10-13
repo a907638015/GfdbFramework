@@ -38,7 +38,7 @@ namespace GfdbFramework.Core
         public bool Insert(TSource entity)
         {
             List<OriginalField> fields = new List<OriginalField>();
-            List<object> args = new List<object>();
+            List<BasicField> pars = new List<BasicField>();
 
             OriginalDataSource dataSource = (OriginalDataSource)DataSource;
 
@@ -58,15 +58,15 @@ namespace GfdbFramework.Core
 
                 if (originalField.IsInsertForDefault || !Helper.CheckIsDefault(value))
                 {
-                    args.Add(value);
+                    pars.Add(new ConstantField(value == null ? originalField.DataType : value.GetType(), value));
                     fields.Add((OriginalField)item.Value.Field);
                 }
             }
 
-            if (args.Count < 1)
+            if (pars.Count < 1)
                 throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息", typeof(TSource).FullName));
 
-            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<object>)args, out Interface.IReadOnlyList<DbParameter> parameters);
+            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<BasicField>)pars, out Interface.IReadOnlyList<DbParameter> parameters);
             bool result;
 
             if (dataSource.Autoincrement != null)
@@ -191,7 +191,7 @@ namespace GfdbFramework.Core
 
             List<OriginalField> fields = new List<OriginalField>();
 
-            List<object> args = new List<object>();
+            List<BasicField> pars = new List<BasicField>();
 
             OriginalDataSource dataSource = (OriginalDataSource)DataSource;
 
@@ -205,11 +205,8 @@ namespace GfdbFramework.Core
                 {
                     if (rootField.Members.TryGetValue(item.Key, out MemberInfo memberInfo))
                     {
-                        if (item.Value.Field.Type != FieldType.Constant)
-                            throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时未能从实体表达式树中提取出有效的值信息", typeof(TSource).FullName));
-
                         fields.Add((OriginalField)memberInfo.Field);
-                        args.Add(((ConstantField)item.Value.Field).Value);
+                        pars.Add((BasicField)item.Value.Field);
                     }
                     else
                     {
@@ -218,10 +215,10 @@ namespace GfdbFramework.Core
                 }
             }
 
-            if (args.Count < 1)
+            if (pars.Count < 1)
                 throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息", typeof(TSource).FullName));
 
-            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<object>)args, out Interface.IReadOnlyList<DbParameter> parameters);
+            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<BasicField>)pars, out Interface.IReadOnlyList<DbParameter> parameters);
 
             return DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters) == 1;
         }

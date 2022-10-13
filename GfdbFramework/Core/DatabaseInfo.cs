@@ -10,6 +10,18 @@ namespace GfdbFramework.Core
     public class DatabaseInfo
     {
         /// <summary>
+        /// 使用指定的数据库名称初始化一个新的 <see cref="DatabaseInfo"/> 类实例。
+        /// </summary>
+        /// <param name="name">数据库名称。</param>
+        public DatabaseInfo(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name), "初始化数据库信息时数据库名称不能为空");
+
+            Name = name;
+        }
+
+        /// <summary>
         /// 获取或设置该数据库的名称。
         /// </summary>
         public string Name { get; set; }

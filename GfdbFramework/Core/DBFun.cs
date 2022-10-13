@@ -22,6 +22,24 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
+        /// 获取数据库服务器的当前时间。
+        /// </summary>
+        /// <returns>数据库服务器的当前时间。</returns>
+        public static DateTime NowTime()
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 生成一个随机的全球唯一码。
+        /// </summary>
+        /// <returns>生成好的全球唯一码。</returns>
+        public static Guid NewID()
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
         /// 聚合函数，用于统计查询结果集中的数据条数。
         /// </summary>
         /// <returns>查询结果集中的数据条数。</returns>

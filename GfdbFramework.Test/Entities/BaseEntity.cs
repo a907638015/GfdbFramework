@@ -19,17 +19,19 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该数据是否已被软删除。
         /// </summary>
+        [Field(DefaultValue = 0, IsNullable = false, SimpleIndex = Enum.SortType.Ascending)]
         public bool IsDeleted { get; set; }
 
         /// <summary>
         /// 获取或设置该数据行创建的时间。
         /// </summary>
+        [Field(DefaultValue = "getdate()", IsNullable = false, SimpleIndex = Enum.SortType.Descending)]
         public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 获取或设置创建该数据的用户主键值。
         /// </summary>
-        [Field(IsInsertForDefault = true)]
+        [Field(IsInsertForDefault = true, DefaultValue = 0, IsNullable = false, SimpleIndex = Enum.SortType.Ascending)]
         public int CreateUID { get; set; }
     }
 }

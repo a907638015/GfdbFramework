@@ -28,6 +28,7 @@ namespace GfdbFramework.Core
         private static readonly Type _MultipleJoinType = typeof(MultipleJoin);
         private static readonly Type _ModifiableMultipleJoin = typeof(ModifiableMultipleJoin<int, int, int, int, int>).GetGenericTypeDefinition();
         private static readonly Type _DataSourceType = typeof(DataSourceType);
+        private static readonly Type _DBFunType = typeof(DBFun);
         private static readonly Type _NullableType = typeof(int?).GetGenericTypeDefinition();
         private static readonly Type _HelperType = typeof(Helper);
         private static readonly Type _LambdaExpressionType = typeof(LambdaExpression);
@@ -222,7 +223,13 @@ namespace GfdbFramework.Core
                         }
                     }
 
-                    if (methodExampleField != null)
+                    //若调用的是 DBFun 类的函数，直接返回 MethodField 字段交友接口实现者处理
+                    if (methodCallExpression.Method.ReflectedType.FullName == _DBFunType.FullName)
+                    {
+                        resultField = new MethodField(null, methodCallExpression.Method, methodParameters);
+                    }
+                    //若调用实例对象不为 null
+                    else if (methodExampleField != null)
                     {
                         //若调用之前的对象类型是 Queryable 类型，则需要对调用方法进行二次处理
                         if (methodCallExpression.Method.ReflectedType.IsSubclassOf(_QueryableType))
@@ -583,7 +590,7 @@ namespace GfdbFramework.Core
                     else if (isExistFieldParameter || methodCallExpression.Method.GetCustomAttribute<DBFunctionAttribute>(false) != null)
                     {
                         //若调用方法为 Helper.Contains 方法，只有当调用参数是 Sql 字段时才用 Sql 表示，否则直接调用该方法得到布尔常量值
-                        if (methodCallExpression.Method.Name == _HelperContainsMethodName && methodCallExpression.Method.DeclaringType.FullName == _HelperType.FullName && methodParameters != null && methodParameters.Length == 2 && methodParameters[0].Type == FieldType.Constant && methodParameters[1] is BasicField basicParameter)
+                        if (methodCallExpression.Method.Name == _HelperContainsMethodName && methodCallExpression.Method.ReflectedType.FullName == _HelperType.FullName && methodParameters != null && methodParameters.Length == 2 && methodParameters[0].Type == FieldType.Constant && methodParameters[1] is BasicField basicParameter)
                             resultField = new BinaryField(body.Type, OperationType.In, basicParameter, (ConstantField)methodParameters[0]);
                         //否则返回 MethodField 类型字段交由接口实现者处理（静态方法）
                         else
