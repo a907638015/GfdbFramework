@@ -105,12 +105,12 @@ dataContext.Classifies.Insert(dataContext.Classifies.Select(classify => new Enti
     CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()
 }).Where(classify => classify.Name == "化妆品"));
 ```
-8. 关联修改（将张三创建的商品名称改成 张三 + 原有商品名称）
+8. 关联修改（将张三创建的商品名称改成 张三的登录账号 + 原有商品名称）
 ```c#
 DataContext dataContext = new DataContext();
 
 dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => commodity.CreateUID == user.ID).Update(source => new Entities.Commodity()
 {
-    Name = source.Right.Name + source.Left.Name
+    Name = source.Right.Account + source.Left.Name
 }, source => source.Right.Name == "张三");
 ```
