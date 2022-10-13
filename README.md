@@ -2,7 +2,7 @@
 
 [![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/GfdbFramework.svg?style=flat-square)](https://www.nuget.org/packages/GfdbFramework/)
 
-**这是一个可以让你用拉姆达表达式执行各种数据库操作的框架，除非你手动实现接口，否则你无需引用该框架，只需要引用 GfdbFramework.SqlServer、GfdbFramework.MySql、GfdbFramework.Sqlite 任意一个即可，示例程序以 GfdbFramework.SqlServer 为准**
+**这是一个可以让你用拉姆达表达式执行各种数据库操作的框架，除非你手动实现接口，否则你无需引用该框架，只需要引用 GfdbFramework.SqlServer、~~GfdbFramework.MySql（正在修改BUG）~~、~~GfdbFramework.Sqlite（正在修改BUG）~~ 任意一个即可，示例程序以 GfdbFramework.SqlServer 为准**
 
 **另外求湖南地区工作机会，可联系QQ：907638015**
 
