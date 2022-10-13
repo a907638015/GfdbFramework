@@ -1,6 +1,6 @@
 # GfdbFramework
 
-[![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/GfdbFramework.svg?style=flat-square)](https://www.nuget.org/packages/GfdbFramework/)
+[![NuGet version (GfdbFramework)](https://img.shields.io/nuget/v/GfdbFramework.svg?style=flat-square)](https://www.nuget.org/packages/GfdbFramework/)
 
 **这是一个可以让你用拉姆达表达式执行各种数据库操作的框架，除非你手动实现接口，否则你无需引用该框架，只需要引用 GfdbFramework.SqlServer、~~GfdbFramework.MySql（正在修改BUG）~~、~~GfdbFramework.Sqlite（正在修改BUG）~~ 任意一个即可，示例程序以 GfdbFramework.SqlServer 为准**
 
@@ -20,7 +20,7 @@
 | 开源 | × | √ | GfdbFramework 托管于 Github，任何人都可以下载并添加自己想要的功能 |
 | 语义语法 | √ | × | GfdbFramework 不支持语义语法，只支持拉姆达表达式操作，美中不足 |
 
-## 使用教程
+## 使用教程（仅包含最常见的用法，更多功能请自行探索）
 1. 创建数据库
 ```c#
 DataContext dataContext = new DataContext();
@@ -50,7 +50,7 @@ Entities.User user = new Entities.User()
     JobNumber = "000001"
 };
 
-ntext.Users.Insert(user);
+dataContext.Users.Insert(user);
 
 Console.WriteLine($"新增用户 ID 为：{user.ID}");
 ```
@@ -85,7 +85,7 @@ dataContext.Commodities.Update(new Entities.Commodity()
     Name = "泰国香米"
 }, commodity => commodity.Name == "东北大米");
 ```
-8. 主键修改（将 ID 值为 100 的用户删除）
+8. 主键删除（将 ID 值为 100 的用户删除）
 ```c#
 DataContext dataContext = new DataContext();
 
