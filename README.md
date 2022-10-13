@@ -7,10 +7,17 @@
 在正式使用该框架之前，首先你得准备好实体类以及数据操作上下文类，可参考[Entities](GfdbFramework.Test/Entities)以及[DataContext.cs](GfdbFramework.Test/DataContext.cs)实现
 
 ## 对比 Linq To Sql
-| 左对齐 | 右对齐 | 居中对齐 |
-| :-----| ----: | :----: |
-| 单元格 | 单元格 | 单元格 |
-| 单元格 | 单元格 | 单元格 |
+| 功能点 | Linq To Sql | GfdbFramework | 描述 |
+| :----- | :----: | :----: | :----- |
+| 创建数据库或表 | × | √ | 免去各种初始化数据库的操作 |
+| 直接删除和修改数据 | × | √ | GfdbFramework 可直接修改或插入实体数据，和 ADO.NET 效率一致 |
+| 多数据库支持 | × | √ | GfdbFramework 作者已实现 MSSql、MySql、Sqlite 支持，其他数据库可自行实现支持 |
+| insert ... select ... 语法 | × | √ | GfdbFramework 可直接将查询结果插入到数据库 |
+| delete ... from ... 语法 | × | √ | GfdbFramework 支持关联删除语法 |
+| 实体类复杂度 | ★★★★★ | ✰ | GfdbFramework 支持任意实体类做为映射类，而 Linq To Sql 必须实现各种接口 |
+| 手动提交数据修改 | √ | × | GfdbFramework 修改即提交， Linq To Sql 必须频繁调用 SubmitChanges() 方法 |
+| 开源 | × | √ | GfdbFramework 托管于 Github，任何人都可以下载并添加自己想要的功能 |
+| 语义语法 | √ | × | GfdbFramework 不支持语义语法，只支持拉姆达表达式操作，美中不足 |
 
 ## 使用教程
 1. 创建数据库
