@@ -89,6 +89,6 @@ var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user
 
 foreach (var item in data)
 {
-    Console.WriteLine($"商品 【{item.CommodityName}】 由用户 ID 为 【{(item.UserID.HasValue ? item.UserID.Value : 0)}】 的用户创建");
+    Console.WriteLine($"商品 {item.CommodityName} 由用户 ID 为 {(item.UserID.HasValue ? item.UserID.Value : 0)} 的用户创建");
 }
 ```
