@@ -114,7 +114,7 @@ namespace GfdbFramework.Interface
         /// <summary>
         /// 删除指定的数据表。
         /// </summary>
-        /// <param name="tableName">待删除数据表对应的可修改对象。</param>
+        /// <param name="modifiable">待删除数据表对应的可修改对象。</param>
         /// <returns>删除成功返回 true，否则返回 false。</returns>
         bool DeleteTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
 
