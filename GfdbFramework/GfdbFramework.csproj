@@ -14,7 +14,7 @@
 		<RepositoryType>应用程序扩展</RepositoryType>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>logo.png</PackageIcon>
-		<DocumentationFile>GfdbFramework.xml</DocumentationFile>
+		<DocumentationFile>bin\GfdbFramework.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
