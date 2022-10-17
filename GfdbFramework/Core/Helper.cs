@@ -39,9 +39,9 @@ namespace GfdbFramework.Core
         private static readonly string _QueryableJoinMethodName = nameof(Queryable.Join);
         private static readonly string _MultipleJoinJoinMethodName = nameof(MultipleJoin.Join);
         private static readonly string _QueryableWhereMethodName = nameof(Queryable.Where);
-        private static readonly string _QueryableFirstMethodName = nameof(Queryable<int,int>.First);
-        private static readonly string _QueryableLastMethodName = nameof(Queryable<int,int>.Last);
-        private static readonly string _QueryableTopMethodName = nameof(Queryable<int,int>.Top);
+        private static readonly string _QueryableFirstMethodName = nameof(Queryable<int, int>.First);
+        private static readonly string _QueryableLastMethodName = nameof(Queryable<int, int>.Last);
+        private static readonly string _QueryableTopMethodName = nameof(Queryable<int, int>.Top);
         private static readonly string _QueryableLimitMethodName = nameof(Queryable.Limit);
         private static readonly string _QueryableAscendingMethodName = nameof(Queryable<int, int>.Ascending);
         private static readonly string _QueryableDescendingMethodName = nameof(Queryable<int, int>.Descending);
@@ -59,6 +59,7 @@ namespace GfdbFramework.Core
         private static readonly string _MultipleJoinFullJoinMethodName = nameof(MultipleJoin<int, int, int, int>.FullJoin);
         private static readonly string _MultipleJoinCrossJoinMethodName = nameof(MultipleJoin<int, int, int, int>.CrossJoin);
         private static readonly string _MultipleJoinSelectMethodName = nameof(MultipleJoin.Select);
+        private static readonly string _DBFunAddMillisecondMethodName = nameof(DBFun.AddMillisecond);
         private static readonly string _HelperToNullMethodName = nameof(ToNull);
         private static readonly string _HelperContainsMethodName = nameof(Contains);
         private static readonly string _HelperLikeMethodName = nameof(Like);
@@ -71,6 +72,7 @@ namespace GfdbFramework.Core
         private static MethodInfo _MultipleJoinJoinMethod = null;
         private static MethodInfo _MultipleJoinSelectMethod = null;
         private static MethodInfo _DBFunCountMethod = null;
+        private static MethodInfo _DBFunAddMillisecondMethod = null;
 
         /// <summary>
         /// 从指定的表达式树中提取出对应的字段信息。
@@ -125,7 +127,7 @@ namespace GfdbFramework.Core
 
                         if (left.Type == FieldType.Constant && left.DataType.IsArray)
                             resultField = new ConstantField(body.Type, ((Array)((ConstantField)left).Value).GetValue(index));
-                        else if(left.Type == FieldType.Collection)
+                        else if (left.Type == FieldType.Collection)
                             resultField = ((CollectionField)left)[(int)((ConstantField)right).Value];
                         else
                             throw new Exception("读取某个数组索引处的字段信息时出现错误，被读取的字段并非为 CollectionField 类型");
@@ -833,42 +835,115 @@ namespace GfdbFramework.Core
                 case ExpressionType.New:
                     NewExpression newExpression = (NewExpression)body;
                     List<Field.Field> arguments = null;
+                    isExistFieldParameter = false;
 
                     if (newExpression.Arguments != null && newExpression.Arguments.Count > 0)
                     {
                         arguments = new List<Field.Field>();
+                        object[] args = new object[newExpression.Arguments.Count];
+                        int i = 0;
 
                         foreach (var item in newExpression.Arguments)
                         {
-                            arguments.Add(ExtractField(item, extractType, parameters, ref startAliasIndex));
+                            Field.Field itemParameter = ExtractField(item, extractType, parameters, ref startAliasIndex);
+
+                            arguments.Add(itemParameter);
+
+                            if (itemParameter.Type != FieldType.Constant)
+                                isExistFieldParameter = true;
+                            else
+                                args[i++] = ((ConstantField)itemParameter).Value;
                         }
-                    }
 
-                    //若是数组或集合，则返回 CollectionField 类型的字段，否则返回 ObjectField 类型的字段
-                    if (body.Type.IsArray || CheckIsList(body.Type))
-                    {
-                        if (!body.Type.IsArray && arguments != null && arguments.Count > 0)
-                            throw new Exception(string.Format("在提取某一指定表达式树中的字段信息时，初始化 List<T> 实例不能有构造参数，具体表达式为：{0}", body.ToString()));
-
-                        resultField = new CollectionField(body.Type, new ConstructorInfo(newExpression.Constructor, arguments));
+                        if (!isExistFieldParameter)
+                            resultField = new ConstantField(body.Type, newExpression.Constructor.Invoke(args));
                     }
                     else
                     {
-                        Dictionary<string, MemberInfo> members = null;
+                        resultField = new ConstantField(body.Type, newExpression.Constructor.Invoke(null));
+                    }
 
-                        if (newExpression.Arguments != null && newExpression.Arguments.Count > 0 && newExpression.Members != null && newExpression.Members.Count > 0 && newExpression.Arguments.Count == newExpression.Members.Count)
+                    //若是 new Guid(string)
+                    if (resultField == null && body.Type.FullName == _GuidType.FullName && arguments.Count == 1 && arguments[0].DataType.FullName == _StringType.FullName && arguments[0] is BasicField)
+                    {
+                        resultField = new UnaryField(_GuidType, OperationType.Convert, (BasicField)arguments[0]);
+                    }
+                    //若是 new DateTime()
+                    else if (resultField == null && body.Type.FullName == _DateTimeType.FullName && (arguments.Count == 3 || arguments.Count == 6 || arguments.Count == 7))
+                    {
+                        bool isNeedConvert = true;
+
+                        foreach (var item in arguments)
                         {
-                            members = new Dictionary<string, MemberInfo>();
-
-                            for (int i = 0; i < newExpression.Arguments.Count; i++)
+                            if (item.DataType.FullName != _Int32Type.FullName)
                             {
-                                var item = newExpression.Members[i];
+                                isNeedConvert = false;
 
-                                members.Add(item.Name, new MemberInfo(item, arguments[i]));
+                                break;
                             }
                         }
 
-                        resultField = new ObjectField(body.Type, new ConstructorInfo(newExpression.Constructor, arguments), members);
+                        if (isNeedConvert)
+                        {
+                            ConstantField delimiterField = new ConstantField(_StringType, "-");
+
+                            BinaryField parameterField = parameterField = new BinaryField(_StringType, OperationType.Add, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[0]), delimiterField);
+                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[1]));
+                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
+                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[2]));
+
+                            if (arguments.Count > 3)
+                            {
+                                delimiterField = new ConstantField(_StringType, ":");
+
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new ConstantField(_StringType, " "));
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[3]));
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[4]));
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[5]));
+                            }
+
+                            resultField = new UnaryField(_DateTimeType, OperationType.Convert, parameterField);
+
+                            if (arguments.Count == 7)
+                            {
+                                if (_DBFunAddMillisecondMethod == null)
+                                    _DBFunAddMillisecondMethod = _DBFunType.GetMethod(_DBFunAddMillisecondMethodName, BindingFlags.Static | BindingFlags.Public);
+
+                                resultField = new MethodField(null, _DBFunAddMillisecondMethod, new Realize.ReadOnlyList<Field.Field>(resultField, arguments[6]));
+                            }
+                        }
+                    }
+
+                    if (resultField == null)
+                    {
+                        //若是数组或集合，则返回 CollectionField 类型的字段，否则返回 ObjectField 类型的字段
+                        if (body.Type.IsArray || CheckIsList(body.Type))
+                        {
+                            if (!body.Type.IsArray && arguments != null && arguments.Count > 0)
+                                throw new Exception(string.Format("在提取某一指定表达式树中的字段信息时，初始化 List<T> 实例不能有构造参数，具体表达式为：{0}", body.ToString()));
+
+                            resultField = new CollectionField(body.Type, new ConstructorInfo(newExpression.Constructor, arguments));
+                        }
+                        else
+                        {
+                            Dictionary<string, MemberInfo> members = null;
+
+                            if (newExpression.Arguments != null && newExpression.Arguments.Count > 0 && newExpression.Members != null && newExpression.Members.Count > 0 && newExpression.Arguments.Count == newExpression.Members.Count)
+                            {
+                                members = new Dictionary<string, MemberInfo>();
+
+                                for (int i = 0; i < newExpression.Arguments.Count; i++)
+                                {
+                                    var item = newExpression.Members[i];
+
+                                    members.Add(item.Name, new MemberInfo(item, arguments[i]));
+                                }
+                            }
+
+                            resultField = new ObjectField(body.Type, new ConstructorInfo(newExpression.Constructor, arguments), members);
+                        }
                     }
                     break;
                 case ExpressionType.NewArrayInit:
