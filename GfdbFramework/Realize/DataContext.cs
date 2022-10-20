@@ -205,7 +205,7 @@ namespace GfdbFramework.Realize
         /// </summary>
         /// <param name="databaseInfo">待创建数据库的信息。</param>
         /// <returns>创建成功返回 true，否则返回 false。</returns>
-        public bool CreateDatabase(DatabaseInfo databaseInfo)
+        public virtual bool CreateDatabase(DatabaseInfo databaseInfo)
         {
             return _DatabaseOperation.CreateDatabase(databaseInfo);
         }
@@ -216,7 +216,7 @@ namespace GfdbFramework.Realize
         /// <typeparam name="TSource">待创建数据表所映射的实体类型。</typeparam>
         /// <param name="modifiable">待创建数据表对应的可修改对象。</param>
         /// <returns>创建成功返回 true，否则返回 false。</returns>
-        public bool CreateTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
+        public virtual bool CreateTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
         {
             return _DatabaseOperation.CreateTable((DataSource.OriginalDataSource)modifiable.DataSource);
         }
@@ -226,7 +226,7 @@ namespace GfdbFramework.Realize
         /// </summary>
         /// <param name="databaseName">需要确认是否存在的数据库名称。</param>
         /// <returns>若该数据库已存在则返回 true，否则返回 false。</returns>
-        public bool ExistsDatabase(string databaseName)
+        public virtual bool ExistsDatabase(string databaseName)
         {
             return _DatabaseOperation.ExistsDatabase(databaseName);
         }
@@ -236,7 +236,7 @@ namespace GfdbFramework.Realize
         /// </summary>
         /// <param name="modifiable">需要确认的数据表所映射的可修改对象。</param>
         /// <returns>若该数据表已存在则返回 true，否则返回 false。</returns>
-        public bool ExistsTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
+        public virtual bool ExistsTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
         {
             return _DatabaseOperation.ExistsTable(((DataSource.OriginalDataSource)modifiable.DataSource).Name);
         }
@@ -246,7 +246,7 @@ namespace GfdbFramework.Realize
         /// </summary>
         /// <param name="modifiable">待删除数据表对应的可修改对象。</param>
         /// <returns>删除成功返回 true，否则返回 false。</returns>
-        public bool DeleteTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
+        public virtual bool DeleteTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new()
         {
             return _DatabaseOperation.DeleteTable(((DataSource.OriginalDataSource)modifiable.DataSource).Name);
         }
