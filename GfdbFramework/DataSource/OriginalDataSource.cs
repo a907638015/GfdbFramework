@@ -68,6 +68,9 @@ namespace GfdbFramework.DataSource
 
                         object[] attrs = rootField.DataType.GetCustomAttributes(true);
 
+                        var matchResult = new Regex("[a-zA-Z0-9_]+").Match(Name);
+                        var indexPrefix = matchResult == null || matchResult.Groups == null || matchResult.Groups.Count < 1 ? Guid.NewGuid().ToString().Substring(0, 8) : matchResult.Groups[0].Value;
+
                         if (attrs != null)
                         {
                             foreach (var item in attrs)
@@ -88,16 +91,13 @@ namespace GfdbFramework.DataSource
                                     }
 
                                     string indexName = indexAttribute.Name;
-                                    var matchResult = new Regex("[a-zA-Z0-9_]+").Match(Name);
-                                    var indexPrefix = matchResult == null || matchResult.Groups == null || matchResult.Groups.Count < 1 ? Guid.NewGuid().ToString().Substring(0, 8) : matchResult.Groups[0].Value;
-
                                     if (string.IsNullOrWhiteSpace(indexName))
                                     {
                                         int i = 0;
 
                                         do
                                         {
-                                            indexName = string.Format("{0}AutoIndexName{1}", indexPrefix, i++);
+                                            indexName = string.Format("{0}_AutoIndex_{1}", indexPrefix, i++);
                                         } while (names.Contains(indexName));
                                     }
 
@@ -117,14 +117,12 @@ namespace GfdbFramework.DataSource
                                 if (field.SimpleIndex != null && field.SimpleIndex.HasValue)
                                 {
                                     string indexName;
-                                    var matchResult = new Regex("[a-zA-Z0-9_]+").Match(Name);
-                                    var indexPrefix = matchResult == null || matchResult.Groups == null || matchResult.Groups.Count < 1 ? Guid.NewGuid().ToString().Substring(0, 8) : matchResult.Groups[0].Value;
 
                                     int i = 0;
 
                                     do
                                     {
-                                        indexName = string.Format("{0}SimpleIndexName{1}", indexPrefix, i++);
+                                        indexName = string.Format("{0}_SimpleIndex_{1}", indexPrefix, i++);
                                     } while (names.Contains(indexName));
 
                                     names.Add(indexName);
