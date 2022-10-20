@@ -87,6 +87,8 @@ namespace GfdbFramework.DataSource
                                     }
 
                                     string indexName = indexAttribute.Name;
+                                    var matchResult = new Regex("[a-zA-Z0-9_]+").Match(Name);
+                                    var indexPrefix = matchResult == null || matchResult.Groups == null || matchResult.Groups.Count < 1 ? Guid.NewGuid().ToString().Substring(0, 8) : matchResult.Groups[0].Value;
 
                                     if (string.IsNullOrWhiteSpace(indexName))
                                     {
@@ -94,7 +96,7 @@ namespace GfdbFramework.DataSource
 
                                         do
                                         {
-                                            indexName = string.Format("AutoIndexName{0}", i++);
+                                            indexName = string.Format("{0}AutoIndexName{1}", indexPrefix, i++);
                                         } while (names.Contains(indexName));
                                     }
 
