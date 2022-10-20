@@ -830,17 +830,38 @@ namespace GfdbFramework.Core
 
                             resultField = new ObjectField(body.Type, objectField.ConstructorInfo, members, true);
                         }
+                        else if (newField.Type == FieldType.Constant)
+                        {
+                            foreach (var item in memberInitExpression.Bindings)
+                            {
+                                if (item.BindingType != MemberBindingType.Assignment)
+                                    throw new Exception(string.Format("从某一表达式树中的成员初始化节点中提取初始化成员信息时出错，表达式为：{0}", body.ToString()));
+
+                                Field.Field field = ExtractField(((MemberAssignment)item).Expression, extractType, parameters, ref startAliasIndex);
+
+                                if (field.Type != FieldType.Constant)
+                                    throw new Exception(string.Format("常量对象在初始化属性时属性值不能是非运行时常量，表达式为：{0}", body.ToString()));
+
+                                if (item.Member.MemberType == MemberTypes.Property)
+                                    ((PropertyInfo)item.Member).SetValue(((ConstantField)newField).Value, ((ConstantField)field).Value, null);
+                                else if (item.Member.MemberType == MemberTypes.Field)
+                                    ((FieldInfo)item.Member).SetValue(((ConstantField)newField).Value, ((ConstantField)field).Value);
+                            }
+
+                            resultField = newField;
+                        }
                     }
                     break;
                 case ExpressionType.New:
                     NewExpression newExpression = (NewExpression)body;
                     List<Field.Field> arguments = null;
                     isExistFieldParameter = false;
+                    object[] constructorArgs = null;
 
                     if (newExpression.Arguments != null && newExpression.Arguments.Count > 0)
                     {
                         arguments = new List<Field.Field>();
-                        object[] args = new object[newExpression.Arguments.Count];
+                        constructorArgs = new object[newExpression.Arguments.Count];
                         int i = 0;
 
                         foreach (var item in newExpression.Arguments)
@@ -851,16 +872,9 @@ namespace GfdbFramework.Core
 
                             if (itemParameter.Type != FieldType.Constant)
                                 isExistFieldParameter = true;
-                            else
-                                args[i++] = ((ConstantField)itemParameter).Value;
+                            else if (!isExistFieldParameter)
+                                constructorArgs[i++] = ((ConstantField)itemParameter).Value;
                         }
-
-                        if (!isExistFieldParameter)
-                            resultField = new ConstantField(body.Type, newExpression.Constructor.Invoke(args));
-                    }
-                    else
-                    {
-                        resultField = new ConstantField(body.Type, newExpression.Constructor.Invoke(null));
                     }
 
                     //若是 new Guid(string)
@@ -885,33 +899,40 @@ namespace GfdbFramework.Core
 
                         if (isNeedConvert)
                         {
-                            ConstantField delimiterField = new ConstantField(_StringType, "-");
-
-                            BinaryField parameterField = parameterField = new BinaryField(_StringType, OperationType.Add, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[0]), delimiterField);
-                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[1]));
-                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
-                            parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[2]));
-
-                            if (arguments.Count > 3)
+                            if (isExistFieldParameter)
                             {
-                                delimiterField = new ConstantField(_StringType, ":");
+                                ConstantField delimiterField = new ConstantField(_StringType, "-");
 
-                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new ConstantField(_StringType, " "));
-                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[3]));
+                                BinaryField parameterField = parameterField = new BinaryField(_StringType, OperationType.Add, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[0]), delimiterField);
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[1]));
                                 parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
-                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[4]));
-                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
-                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[5]));
+                                parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[2]));
+
+                                if (arguments.Count > 3)
+                                {
+                                    delimiterField = new ConstantField(_StringType, ":");
+
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new ConstantField(_StringType, " "));
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[3]));
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[4]));
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, delimiterField);
+                                    parameterField = new BinaryField(_StringType, OperationType.Add, parameterField, new UnaryField(_StringType, OperationType.Convert, (BasicField)arguments[5]));
+                                }
+
+                                resultField = new UnaryField(_DateTimeType, OperationType.Convert, parameterField);
+
+                                if (arguments.Count == 7)
+                                {
+                                    if (_DBFunAddMillisecondMethod == null)
+                                        _DBFunAddMillisecondMethod = _DBFunType.GetMethod(_DBFunAddMillisecondMethodName, BindingFlags.Static | BindingFlags.Public);
+
+                                    resultField = new MethodField(null, _DBFunAddMillisecondMethod, new Realize.ReadOnlyList<Field.Field>(resultField, arguments[6]));
+                                }
                             }
-
-                            resultField = new UnaryField(_DateTimeType, OperationType.Convert, parameterField);
-
-                            if (arguments.Count == 7)
+                            else
                             {
-                                if (_DBFunAddMillisecondMethod == null)
-                                    _DBFunAddMillisecondMethod = _DBFunType.GetMethod(_DBFunAddMillisecondMethodName, BindingFlags.Static | BindingFlags.Public);
-
-                                resultField = new MethodField(null, _DBFunAddMillisecondMethod, new Realize.ReadOnlyList<Field.Field>(resultField, arguments[6]));
+                                resultField = new ConstantField(body.Type, newExpression.Constructor.Invoke(constructorArgs));
                             }
                         }
                     }

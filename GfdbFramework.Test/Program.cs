@@ -14,6 +14,7 @@ namespace GfdbFramework.Test
         static readonly string[] brandNames = new string[] { "白沙", "利群", "芙蓉王", "黄金叶", "中华", "红塔山", "红双喜" };
         static readonly string[] classifyNames = new string[] { "日用品", "水产品", "蔬菜", "坚果", "化妆品", "零食", "医疗用品", "其他" };
         static readonly string[] unitNames = new string[] { "克", "千克", "斤", "两", "吨", "方", "包", "箱", "台", "件" };
+        static readonly string[] commodityNames = new string[] { "精品白沙（二代）", "利群（白色硬壳包装）", "芙蓉王（黄涩硬壳包装）", "波力海苔", "人参果", "东北大米", "帝王蟹" };
 
         static void Main(string[] args)
         {
