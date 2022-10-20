@@ -5,9 +5,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="GfdbFramework.SqlServer" Version="1.1.9-bate3" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GfdbFramework.SqlServer" Version="1.2.4-bate1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GfdbFramework\GfdbFramework.csproj" />
