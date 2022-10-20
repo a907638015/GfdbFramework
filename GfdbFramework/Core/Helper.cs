@@ -20,6 +20,8 @@ namespace GfdbFramework.Core
         private static readonly Type _IListType = typeof(IList<>);
         private static readonly Type _Int32Type = typeof(int);
         private static readonly Type _DateTimeType = typeof(DateTime);
+        private static readonly Type _DateTimeOffsetType = typeof(DateTimeOffset);
+        private static readonly Type _TimeSpanType = typeof(TimeSpan);
         private static readonly Type _GuidType = typeof(Guid);
         private static readonly Type _StringType = typeof(string);
         private static readonly Type _DecimalType = typeof(decimal);
@@ -1272,7 +1274,7 @@ namespace GfdbFramework.Core
         /// <returns>若该类型为基础数据类型时返回 true，否则返回 false。</returns>
         public static bool CheckIsBasicType(Type type)
         {
-            return type.IsPrimitive || type == _DecimalType || type.IsEnum || type == _DateTimeType || type == _StringType || type == _GuidType || (type.IsGenericType && type.GetGenericTypeDefinition() == _NullableType);
+            return type.IsPrimitive || type.IsEnum || type == _DecimalType || type == _DateTimeOffsetType || type == _TimeSpanType || type == _DateTimeType || type == _StringType || type == _GuidType || (type.IsGenericType && type.GetGenericTypeDefinition() == _NullableType);
         }
 
         /// <summary>
