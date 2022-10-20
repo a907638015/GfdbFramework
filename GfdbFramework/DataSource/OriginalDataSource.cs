@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using GfdbFramework.Core;
 using GfdbFramework.Enum;
 using GfdbFramework.Field;
@@ -116,12 +117,14 @@ namespace GfdbFramework.DataSource
                                 if (field.SimpleIndex != null && field.SimpleIndex.HasValue)
                                 {
                                     string indexName;
+                                    var matchResult = new Regex("[a-zA-Z0-9_]+").Match(Name);
+                                    var indexPrefix = matchResult == null || matchResult.Groups == null || matchResult.Groups.Count < 1 ? Guid.NewGuid().ToString().Substring(0, 8) : matchResult.Groups[0].Value;
 
                                     int i = 0;
 
                                     do
                                     {
-                                        indexName = string.Format("SimpleIndexName{0}", i++);
+                                        indexName = string.Format("{0}SimpleIndexName{1}", indexPrefix, i++);
                                     } while (names.Contains(indexName));
 
                                     names.Add(indexName);
