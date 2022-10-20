@@ -62,7 +62,7 @@ namespace GfdbFramework.Test
                         Code = GetRandomString(6),
                         Name = classifyNames[i],
                         CreateTime = DateTime.Now,
-                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()  //随机获取一个用户 ID 作为创建者
+                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewGuid()).First()  //随机获取一个用户 ID 作为创建者
                     });
                 }
 
@@ -75,7 +75,7 @@ namespace GfdbFramework.Test
                         Code = GetRandomString(6),
                         Name = brandNames[i],
                         CreateTime = DateTime.Now,
-                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()  //随机获取一个用户 ID 作为创建者
+                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewGuid()).First()  //随机获取一个用户 ID 作为创建者
                     });
                 }
 
@@ -86,7 +86,7 @@ namespace GfdbFramework.Test
                     {
                         Name = unitNames[i],
                         CreateTime = DateTime.Now,
-                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()  //随机获取一个用户 ID 作为创建者
+                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewGuid()).First()  //随机获取一个用户 ID 作为创建者
                     });
                 }
 
@@ -97,14 +97,14 @@ namespace GfdbFramework.Test
                     {
                         Name = commodityNames[i],
                         CreateTime = DateTime.Now,
-                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First(),  //随机获取一个用户 ID 作为创建者
-                        PackageUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewID()).First(),
-                        MiddleUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewID()).First(),
+                        CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewGuid()).First(),  //随机获取一个用户 ID 作为创建者
+                        PackageUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewGuid()).First(),
+                        MiddleUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewGuid()).First(),
                         MiddleQuantity = 50,
-                        MinimumUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewID()).First(),
+                        MinimumUnitID = dataContext.Units.Select(unit => unit.ID).Ascending(unit => DBFun.NewGuid()).First(),
                         MinimumQuantity = 10,
-                        BrandID = dataContext.Brands.Select(brand => brand.ID).Ascending(brand => DBFun.NewID()).First(),
-                        ClassifyID = dataContext.Brands.Select(classify => classify.ID).Ascending(classify => DBFun.NewID()).First(),
+                        BrandID = dataContext.Brands.Select(brand => brand.ID).Ascending(brand => DBFun.NewGuid()).First(),
+                        ClassifyID = dataContext.Brands.Select(classify => classify.ID).Ascending(classify => DBFun.NewGuid()).First(),
                         Code = GetRandomString(6),
                         CostPrice = rd.Next(200, 6000),
                         MiddleNorms = GetRandomString(10),
@@ -200,7 +200,7 @@ namespace GfdbFramework.Test
                     ParentID = classify.ID,
                     Code = GetRandomString(6),
                     CreateTime = DateTime.Now,
-                    CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewID()).First()
+                    CreateUID = dataContext.Users.Select(user => user.ID).Ascending(user => DBFun.NewGuid()).First()
                 }).Where(classify => classify.Name == "化妆品"));
 
                 Console.WriteLine(insertCount > 0 ? "口红品牌插入成功" : "口红品牌插入失败");

@@ -188,7 +188,25 @@ namespace GfdbFramework.Core
         /// 生成一个随机的全球唯一码。
         /// </summary>
         /// <returns>生成好的全球唯一码。</returns>
-        public static Guid NewID()
+        public static Guid NewGuid()
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 生成一个随机的 32 位整数值。
+        /// </summary>
+        /// <returns>生成好的随机 32 位整数值。</returns>
+        public static Guid NewInt()
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 生成一个指定范围内的随机 32 位整数值（最小值为 <paramref name="min"/>，最大值为 <paramref name="max"/> - 1）。
+        /// </summary>
+        /// <returns>生成好指定范围内的随机 32 位整数值。</returns>
+        public static Guid NewInt(int min, int max)
         {
             throw new Exception(_CALL_EXCEPTION_MESSAGE);
         }
