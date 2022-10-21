@@ -203,6 +203,15 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
+        /// 生成一个随机的 64 位整数值。
+        /// </summary>
+        /// <returns>生成好的随机 64 位整数值。</returns>
+        public static Guid NewLong()
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
         /// 生成一个指定范围内的随机 32 位整数值（最小值为 <paramref name="min"/>，最大值为 <paramref name="max"/> - 1）。
         /// </summary>
         /// <returns>生成好指定范围内的随机 32 位整数值。</returns>
