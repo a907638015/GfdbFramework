@@ -73,7 +73,7 @@ namespace GfdbFramework.Core
             {
                 result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters, out long value) == 1;
 
-                object autoincrementValue = null;
+                object autoincrementValue = value;
 
                 switch (dataSource.Autoincrement.Field.DataType.FullName)
                 {
