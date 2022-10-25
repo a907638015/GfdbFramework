@@ -734,10 +734,20 @@ namespace GfdbFramework.Core
                 {
                     foreach (var item in objectField.Members)
                     {
+                        object fieldValue = GetFieldValue(item.Value.Field, dr);
+
                         if (item.Value.Member.MemberType == System.Reflection.MemberTypes.Property)
-                            ((System.Reflection.PropertyInfo)item.Value.Member).SetValue(result, GetFieldValue(item.Value.Field, dr), null);
+                        {
+                            System.Reflection.PropertyInfo propertyInfo = (System.Reflection.PropertyInfo)item.Value.Member;
+
+                            propertyInfo.SetValue(result, ToTargetType(propertyInfo.PropertyType, GetFieldValue(item.Value.Field, dr)), null);
+                        }
                         else if (item.Value.Member.MemberType == System.Reflection.MemberTypes.Field)
-                            ((System.Reflection.FieldInfo)item.Value.Member).SetValue(result, GetFieldValue(item.Value.Field, dr));
+                        {
+                            System.Reflection.FieldInfo fieldInfo = (System.Reflection.FieldInfo)item.Value.Member;
+
+                            fieldInfo.SetValue(result, ToTargetType(fieldInfo.FieldType, GetFieldValue(item.Value.Field, dr)));
+                        }
                     }
                 }
 
@@ -789,6 +799,245 @@ namespace GfdbFramework.Core
                 else
                     return result;
             }
+        }
+
+        /// <summary>
+        /// 将指定值转换成目标类型的值。
+        /// </summary>
+        /// <param name="targetType">目标值类型。</param>
+        /// <param name="value">待转换的值。</param>
+        /// <returns>若转换成功则返回转换后的值，否则抛出异常。</returns>
+        private object ToTargetType(Type targetType, object value)
+        {
+            Type valueType = value?.GetType();
+
+            if (valueType != null && valueType == targetType)
+                return value;
+
+            if (targetType.IsEnum)
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的枚举值", targetType.FullName));
+                else if (value is int intValue)
+                    return System.Enum.ToObject(targetType, intValue);
+                else if (value is uint uintValue)
+                    return System.Enum.ToObject(targetType, uintValue);
+                else if (value is long longValue)
+                    return System.Enum.ToObject(targetType, longValue);
+                else if (value is ulong ulongValue)
+                    return System.Enum.ToObject(targetType, ulongValue);
+                else if (value is short shortValue)
+                    return System.Enum.ToObject(targetType, shortValue);
+                else if (value is ushort ushortValue)
+                    return System.Enum.ToObject(targetType, ushortValue);
+                else if (value is byte byteValue)
+                    return System.Enum.ToObject(targetType, byteValue);
+                else if (value is sbyte sbyteValue)
+                    return System.Enum.ToObject(targetType, sbyteValue);
+                else if (value is string stringValue)
+                    return System.Enum.Parse(targetType, stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的枚举值", value.GetType().FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.Int32")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is uint uintValue)
+                    return (int)uintValue;
+                else if (value is long longValue)
+                    return (int)longValue;
+                else if (value is ulong ulongValue)
+                    return (int)ulongValue;
+                else if (value is short shortValue)
+                    return (int)shortValue;
+                else if (value is ushort ushortValue)
+                    return (int)ushortValue;
+                else if (value is byte byteValue)
+                    return (int)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (int)sbyteValue;
+                else if (value is string stringValue)
+                    return int.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.UInt32")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (uint)intValue;
+                else if (value is long longValue)
+                    return (uint)longValue;
+                else if (value is ulong ulongValue)
+                    return (uint)ulongValue;
+                else if (value is short shortValue)
+                    return (uint)shortValue;
+                else if (value is ushort ushortValue)
+                    return (uint)ushortValue;
+                else if (value is byte byteValue)
+                    return (uint)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (uint)sbyteValue;
+                else if (value is string stringValue)
+                    return uint.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.Int64")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (long)intValue;
+                else if (value is uint uintValue)
+                    return (long)uintValue;
+                else if (value is ulong ulongValue)
+                    return (long)ulongValue;
+                else if (value is short shortValue)
+                    return (long)shortValue;
+                else if (value is ushort ushortValue)
+                    return (long)ushortValue;
+                else if (value is byte byteValue)
+                    return (long)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (long)sbyteValue;
+                else if (value is string stringValue)
+                    return long.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.UInt64")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (ulong)intValue;
+                else if (value is uint uintValue)
+                    return (ulong)uintValue;
+                else if (value is long longValue)
+                    return (ulong)longValue;
+                else if (value is short shortValue)
+                    return (ulong)shortValue;
+                else if (value is ushort ushortValue)
+                    return (ulong)ushortValue;
+                else if (value is byte byteValue)
+                    return (ulong)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (ulong)sbyteValue;
+                else if (value is string stringValue)
+                    return ulong.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.Int16")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (short)intValue;
+                else if (value is uint uintValue)
+                    return (short)uintValue;
+                else if (value is long longValue)
+                    return (short)longValue;
+                else if (value is ulong ulongValue)
+                    return (short)ulongValue;
+                else if (value is ushort ushortValue)
+                    return (short)ushortValue;
+                else if (value is byte byteValue)
+                    return (short)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (short)sbyteValue;
+                else if (value is string stringValue)
+                    return short.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.UInt16")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (ushort)intValue;
+                else if (value is uint uintValue)
+                    return (ushort)uintValue;
+                else if (value is long longValue)
+                    return (ushort)longValue;
+                else if (value is ulong ulongValue)
+                    return (ushort)ulongValue;
+                else if (value is short shortValue)
+                    return (ushort)shortValue;
+                else if (value is byte byteValue)
+                    return (ushort)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (ushort)sbyteValue;
+                else if (value is string stringValue)
+                    return ushort.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.Byte")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (byte)intValue;
+                else if (value is uint uintValue)
+                    return (byte)uintValue;
+                else if (value is long longValue)
+                    return (byte)longValue;
+                else if (value is ulong ulongValue)
+                    return (byte)ulongValue;
+                else if (value is short shortValue)
+                    return (byte)shortValue;
+                else if (value is ushort ushortValue)
+                    return (byte)ushortValue;
+                else if (value is sbyte sbyteValue)
+                    return (byte)sbyteValue;
+                else if (value is string stringValue)
+                    return byte.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.SByte")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (sbyte)intValue;
+                else if (value is uint uintValue)
+                    return (sbyte)uintValue;
+                else if (value is long longValue)
+                    return (sbyte)longValue;
+                else if (value is ulong ulongValue)
+                    return (sbyte)ulongValue;
+                else if (value is short shortValue)
+                    return (sbyte)shortValue;
+                else if (value is ushort ushortValue)
+                    return (sbyte)ushortValue;
+                else if (value is byte byteValue)
+                    return (sbyte)byteValue;
+                else if (value is string stringValue)
+                    return sbyte.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.DateTime")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is string stringValue)
+                    return DateTime.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.String")
+            {
+                return value?.ToString();
+            }
+
+            throw new Exception(string.Format("无法将{0}的值转换成 {1} 类型的值", valueType == null ? " null 值 " : string.Format(" {0} 类型的值", valueType.FullName), targetType.FullName));
         }
 
         /// <summary>
