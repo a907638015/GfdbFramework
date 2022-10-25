@@ -1032,6 +1032,102 @@ namespace GfdbFramework.Core
                 else
                     throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
             }
+            else if (targetType.FullName == "System.Boolean")
+            {
+                if (value == null)
+                {
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                }
+                else if (value is int intValue)
+                {
+                    if (intValue == 0)
+                        return false;
+                    else if (intValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", intValue, targetType.FullName));
+                }
+                else if (value is uint uintValue)
+                {
+                    if (uintValue == 0)
+                        return false;
+                    else if (uintValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", uintValue, targetType.FullName));
+                }
+                else if (value is long longValue)
+                {
+                    if (longValue == 0)
+                        return false;
+                    else if (longValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", longValue, targetType.FullName));
+                }
+                else if (value is ulong ulongValue)
+                {
+                    if (ulongValue == 0)
+                        return false;
+                    else if (ulongValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", ulongValue, targetType.FullName));
+                }
+                else if (value is short shortValue)
+                {
+                    if (shortValue == 0)
+                        return false;
+                    else if (shortValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", shortValue, targetType.FullName));
+                }
+                else if (value is ushort ushortValue)
+                {
+                    if (ushortValue == 0)
+                        return false;
+                    else if (ushortValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", ushortValue, targetType.FullName));
+                }
+                else if (value is byte byteValue)
+                {
+                    if (byteValue == 0)
+                        return false;
+                    else if (byteValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", byteValue, targetType.FullName));
+                }
+                else if (value is sbyte sbyteValue)
+                {
+                    if (sbyteValue == 0)
+                        return false;
+                    else if (sbyteValue == 1)
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", sbyteValue, targetType.FullName));
+                }
+                else if (value is string stringValue)
+                {
+                    string oldValue = stringValue;
+
+                    stringValue = stringValue?.Trim().ToLower();
+
+                    if (stringValue == "0" || stringValue == "false")
+                        return false;
+                    else if (stringValue == "1" || stringValue == "true")
+                        return true;
+                    else
+                        throw new Exception(string.Format("无法将 {0} 转换成 {1} 类型的值", oldValue, targetType.FullName));
+                }
+                else
+                {
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+                }
+            }
             else if (targetType.FullName == "System.String")
             {
                 return value?.ToString();
