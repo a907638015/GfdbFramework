@@ -14,6 +14,7 @@ namespace GfdbFramework.Realize
     public abstract class DataContext : IDataContext
     {
         private readonly IDatabaseOperation _DatabaseOperation = null;
+        private readonly ISqlFactory _ISqlFactory = null;
         private static readonly Type _NullableType = typeof(int?).GetGenericTypeDefinition();
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace GfdbFramework.Realize
         public DataContext(IDatabaseOperation databaseOperation, ISqlFactory sqlFactory)
         {
             _DatabaseOperation = databaseOperation;
-            SqlFactory = sqlFactory;
+            _ISqlFactory = sqlFactory;
             IsCaseSensitive = true;
         }
 
@@ -42,7 +43,13 @@ namespace GfdbFramework.Realize
         /// <summary>
         /// 获取一个用于创建各种 Sql 的工厂实例。
         /// </summary>
-        public ISqlFactory SqlFactory { get; }
+        ISqlFactory IDataContext.SqlFactory
+        {
+            get
+            {
+                return _ISqlFactory;
+            }
+        }
 
         /// <summary>
         /// 获取当前所操作数据库的内部版本号。
