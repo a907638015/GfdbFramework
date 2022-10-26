@@ -65,6 +65,11 @@ namespace GfdbFramework.Realize
         public bool IsCaseSensitive { get; set; }
 
         /// <summary>
+        /// 获取当前所操作数据库中所有已存在的表名。
+        /// </summary>
+        public abstract Interface.IReadOnlyList<string> TableNames { get; }
+
+        /// <summary>
         /// 将指定的 .NET 基础数据类型转换成映射到数据库后的默认数据类型（如：System.Int32 应当返回 int，System.String 可返回 varchar(255)）。
         /// </summary>
         /// <param name="type">待转换成数据库数据类型的框架类型。</param>

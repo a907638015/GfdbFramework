@@ -131,5 +131,10 @@ namespace GfdbFramework.Interface
         /// <param name="modifiable">需要确认的数据表所映射的可修改对象。</param>
         /// <returns>若该数据表已存在则返回 true，否则返回 false。</returns>
         bool ExistsTable<TSource>(Modifiable<TSource, TSource> modifiable) where TSource : class, new();
+
+        /// <summary>
+        /// 获取当前所操作数据库中所有已存在的表名。
+        /// </summary>
+        IReadOnlyList<string> TableNames { get; }
     }
 }
