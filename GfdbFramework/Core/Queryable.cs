@@ -1128,6 +1128,21 @@ namespace GfdbFramework.Core
                     throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
                 }
             }
+            else if (targetType.FullName == "System.Guid")
+            {
+                if (value == null)
+                {
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                }
+                else if (value is string stringValue)
+                {
+                    return Guid.Parse(stringValue.Trim());
+                }
+                else
+                {
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+                }
+            }
             else if (targetType.FullName == "System.String")
             {
                 return value?.ToString();
