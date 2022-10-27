@@ -168,13 +168,22 @@ namespace GfdbFramework.Core
             {
                 DataContext.DatabaseOperation.OpenConnection(ConnectionOpenedMode.Framework);
 
-                foreach (var item in entitys)
+                try
                 {
-                    if (Insert(item))
-                        result += 1;
+                    foreach (var item in entitys)
+                    {
+                        if (Insert(item))
+                            result += 1;
+                    }
                 }
-
-                DataContext.DatabaseOperation.CloseConnection(ConnectionOpenedMode.Framework);
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    DataContext.DatabaseOperation.CloseConnection(ConnectionOpenedMode.Framework);
+                }
             }
 
             return result;
