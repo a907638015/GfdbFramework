@@ -63,6 +63,11 @@ namespace GfdbFramework.Attribute
         public bool IsInsertForDefault { get; set; }
 
         /// <summary>
+        /// 获取或设置一个值，该值指示在执行自动更新操作时当实体成员的值为默认值时是否将该默认值更新到数据库。
+        /// </summary>
+        public bool IsUpdateForDefault { get; set; }
+
+        /// <summary>
         /// 获取或设置一个值，该值指示当前成员映射的数据库表或视图字段是否允许为空。
         /// </summary>
         public bool IsNullable { get; set; }

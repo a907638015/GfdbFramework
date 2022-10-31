@@ -448,7 +448,7 @@ namespace GfdbFramework.Core
                 else if (item.Value.Member.MemberType == MemberTypes.Field)
                     value = ((FieldInfo)item.Value.Member).GetValue(entity);
 
-                if (!Helper.CheckIsDefault(value))
+                if (originalField.IsUpdateForDefault || !Helper.CheckIsDefault(value))
                     modifyFields.Add(new ModifyInfo(originalField, (OriginalDataSource)DataSource, new ConstantField(value.GetType(), value)));
             }
 

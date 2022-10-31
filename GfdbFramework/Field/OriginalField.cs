@@ -27,6 +27,7 @@ namespace GfdbFramework.Field
             IsUnique = fieldAttribute.IsUnique;
             IsAutoincrement = fieldAttribute.IsAutoincrement;
             IsInsertForDefault = fieldAttribute.IsInsertForDefault;
+            IsUpdateForDefault = fieldAttribute.IsUpdateForDefault;
             IsNullable = fieldAttribute.IsNullable;
             SimpleIndex = fieldAttribute.SimpleIndex == 0 ? null : (Enum.SortType?)fieldAttribute.SimpleIndex;
             IncrementSpeed = fieldAttribute.IncrementSpeed;
@@ -49,6 +50,7 @@ namespace GfdbFramework.Field
             IsUnique = originalField.IsUnique;
             IsAutoincrement = originalField.IsAutoincrement;
             IsInsertForDefault = originalField.IsInsertForDefault;
+            IsUpdateForDefault = originalField.IsUpdateForDefault;
             IncrementSpeed = originalField.IncrementSpeed;
             IncrementSeed = originalField.IncrementSeed;
             DefaultValue = originalField.DefaultValue;
@@ -79,6 +81,11 @@ namespace GfdbFramework.Field
         /// 获取一个值，该值指示在执行自动插入操作时当该字段所映射实体成员的值为默认值时是否将该默认值插入到数据库。
         /// </summary>
         public bool IsInsertForDefault { get; }
+
+        /// <summary>
+        /// 获取一个值，该值指示在执行自动更新操作时当该字段所映射实体成员的值为默认值时是否将该默认值更新到数据库。
+        /// </summary>
+        public bool IsUpdateForDefault { get; set; }
 
         /// <summary>
         /// 获取或设置一个值，该值指示当前字段是否允许为空值。
