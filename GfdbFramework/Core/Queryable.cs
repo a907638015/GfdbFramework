@@ -734,19 +734,17 @@ namespace GfdbFramework.Core
                 {
                     foreach (var item in objectField.Members)
                     {
-                        object fieldValue = GetFieldValue(item.Value.Field, dr);
-
                         if (item.Value.Member.MemberType == System.Reflection.MemberTypes.Property)
                         {
                             System.Reflection.PropertyInfo propertyInfo = (System.Reflection.PropertyInfo)item.Value.Member;
 
-                            propertyInfo.SetValue(result, ToTargetType(propertyInfo.PropertyType, GetFieldValue(item.Value.Field, dr)), null);
+                            propertyInfo.SetValue(result, GetFieldValue(item.Value.Field, dr), null);
                         }
                         else if (item.Value.Member.MemberType == System.Reflection.MemberTypes.Field)
                         {
                             System.Reflection.FieldInfo fieldInfo = (System.Reflection.FieldInfo)item.Value.Member;
 
-                            fieldInfo.SetValue(result, ToTargetType(fieldInfo.FieldType, GetFieldValue(item.Value.Field, dr)));
+                            fieldInfo.SetValue(result, GetFieldValue(item.Value.Field, dr));
                         }
                     }
                 }
@@ -797,7 +795,7 @@ namespace GfdbFramework.Core
                 if (result == DBNull.Value)
                     return null;
                 else
-                    return result;
+                    return ToTargetType(field.DataType, result);
             }
         }
 
