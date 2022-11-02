@@ -54,6 +54,10 @@ namespace GfdbFramework.Enum
         /// <summary>
         /// 子查询字段。
         /// </summary>
-        Subquery = 10
+        Subquery = 10,
+        /// <summary>
+        /// Switch 分支字段。
+        /// </summary>
+        Switch = 11
     }
 }

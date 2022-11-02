@@ -187,6 +187,24 @@ namespace GfdbFramework.Realize
         }
 
         /// <summary>
+        /// 打开数据库的连接通道（一次性需要操作多条 Sql 语句时建议手动打开连接通道，否则每次执行一次 Sql 都会自动关闭连接）。
+        /// </summary>
+        /// <returns>打开成功返回 true，否则返回 false。</returns>
+        public virtual bool OpenConnection()
+        {
+            return _DatabaseOperation.OpenConnection();
+        }
+
+        /// <summary>
+        /// 关闭数据库的连接通道（手动调用 <see cref="OpenConnection"/> 方法打开连接通道时必须手动调用该方法关闭）。
+        /// </summary>
+        /// <returns>关闭成功返回 true，否则返回 false。</returns>
+        public virtual bool CloseConnection()
+        {
+            return _DatabaseOperation.CloseConnection();
+        }
+
+        /// <summary>
         /// 回滚当前事务到指定保存点或回滚指定事务。
         /// </summary>
         /// <param name="pointName">要回滚的保存点名称或事务名称。</param>

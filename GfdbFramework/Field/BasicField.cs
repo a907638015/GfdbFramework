@@ -122,6 +122,9 @@ namespace GfdbFramework.Field
                     case FieldType.Constant:
                         _ExpressionSQL = dataContext.SqlFactory.InitConstantField(dataContext, dataSource, (ConstantField)this, addParameter);
                         break;
+                    case FieldType.Switch:
+                        _ExpressionSQL = dataContext.SqlFactory.InitSwitchField(dataContext, dataSource, (SwitchField)this, addParameter);
+                        break;
                 }
             }
         }

@@ -689,6 +689,64 @@ namespace GfdbFramework.Core
                         }
                     }
                     break;
+                case ExpressionType.Switch:
+                    SwitchExpression switchExpression = (SwitchExpression)body;
+
+                    Field.Field switchValue = ExtractField(switchExpression.SwitchValue, extractType, parameters, ref startAliasIndex);
+
+                    if (switchValue != null && switchValue is BasicField basicSwitchValue)
+                    {
+                        List<SwitchCase> switchCases = null;
+                        BasicField defaultBody = null;
+
+                        if (switchExpression.Cases != null && switchExpression.Cases.Count > 0)
+                        {
+                            switchCases = new List<SwitchCase>();
+
+                            foreach (var item in switchExpression.Cases)
+                            {
+                                Field.Field caseBody = ExtractField(item.Body, extractType, parameters, ref startAliasIndex);
+
+                                if (caseBody != null && caseBody is BasicField basicCaseBody)
+                                {
+                                    List<ConstantField> testValues = new List<ConstantField>();
+
+                                    foreach (var testValueItem in item.TestValues)
+                                    {
+                                        Field.Field caseTestValue = ExtractField(testValueItem, extractType, parameters, ref startAliasIndex);
+
+                                        if (caseTestValue != null && caseTestValue.Type == FieldType.Constant)
+                                            testValues.Add((ConstantField)caseTestValue);
+                                        else
+                                            throw new Exception(string.Format("获取某个 Switch 语句中某个分支测定值时获取到的字段{0}，表达式为：{0}", caseBody == null ? "为 null" : "类型不是常量字段", testValueItem.ToString()));
+                                    }
+
+                                    switchCases.Add(new SwitchCase(basicCaseBody, (Realize.ReadOnlyList<ConstantField>)testValues));
+                                }
+                                else
+                                {
+                                    throw new Exception(string.Format("获取某个 Switch 语句中某个分支返回值主体时获取到的字段{0}，表达式为：{0}", caseBody == null ? "为 null" : "类型不是基础数据类型字段，而对于 Sql 而言分支返回值只能是基础数据类型的字段", item.Body.ToString()));
+                                }
+                            }
+                        }
+
+                        if (switchExpression.DefaultBody != null)
+                        {
+                            Field.Field tempDefaultBody = ExtractField(switchExpression.DefaultBody, extractType, parameters, ref startAliasIndex);
+
+                            if (tempDefaultBody != null && tempDefaultBody is BasicField basicSwitchDefault)
+                                defaultBody = basicSwitchDefault;
+                            else
+                                throw new Exception(string.Format("获取某个 Switch 语句的默认分支返回值时获取到的字段{0}，表达式为：{0}", tempDefaultBody == null ? "为 null" : "类型不是基础数据类型字段，而对于 Sql 而言分支返回值只能是基础数据类型的字段", switchExpression.DefaultBody.ToString()));
+                        }
+
+                        resultField = new SwitchField(body.Type, basicSwitchValue, (Realize.ReadOnlyList<SwitchCase>)switchCases, defaultBody);
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("获取某个 Switch 语句的判定值字段时获取到的字段{0}，表达式为：{0}", switchValue == null ? "为 null" : "类型不是基础数据类型字段，而对于 Sql 而言判断值只能是基础数据类型的字段", body.ToString()));
+                    }
+                    break;
                 case ExpressionType.ListInit:
                     ListInitExpression listInitExpression = (ListInitExpression)body;
 

@@ -105,6 +105,16 @@ namespace GfdbFramework.Interface
         ExpressionInfo InitSubqueryField(IDataContext dataContext, DataSource.DataSource dataSource, SubqueryField field, Func<object, string> addParameter);
 
         /// <summary>
+        /// 初始化指定 Switch 分支字段的 Sql 表示信息。
+        /// </summary>
+        /// <param name="dataContext">数据操作上下文对象。</param>
+        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
+        /// <param name="field">待生成 Sql 表示信息的字段。</param>
+        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
+        /// <returns>生成好的表示 Sql 信息。</returns>
+        ExpressionInfo InitSwitchField(IDataContext dataContext, DataSource.DataSource dataSource, SwitchField field, Func<object, string> addParameter);
+
+        /// <summary>
         /// 初始化指定常量字段的 Sql 表示信息。
         /// </summary>
         /// <param name="dataContext">数据操作上下文对象。</param>

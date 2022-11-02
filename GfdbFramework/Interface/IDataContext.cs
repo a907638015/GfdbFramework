@@ -97,6 +97,18 @@ namespace GfdbFramework.Interface
         void SaveTransaction(string pointName);
 
         /// <summary>
+        /// 打开数据库的连接通道（一次性需要操作多条 Sql 语句时建议手动打开连接通道，否则每次执行一次 Sql 都会自动关闭连接）。
+        /// </summary>
+        /// <returns>打开成功返回 true，否则返回 false。</returns>
+        bool OpenConnection();
+
+        /// <summary>
+        /// 关闭数据库的连接通道（手动调用 <see cref="OpenConnection"/> 方法打开连接通道时必须手动调用该方法关闭）。
+        /// </summary>
+        /// <returns>关闭成功返回 true，否则返回 false。</returns>
+        bool CloseConnection();
+
+        /// <summary>
         /// 创建数据库（该操作为独立操作，不受上下文控制，即不受事务、数据库开关连接等操作影响）。
         /// </summary>
         /// <param name="databaseInfo">待创建数据库的信息。</param>
