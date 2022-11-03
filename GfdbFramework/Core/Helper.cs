@@ -42,6 +42,7 @@ namespace GfdbFramework.Core
         private static readonly string _MultipleJoinJoinMethodName = nameof(MultipleJoin.Join);
         private static readonly string _QueryableWhereMethodName = nameof(Queryable.Where);
         private static readonly string _QueryableFirstMethodName = nameof(Queryable<int, int>.First);
+        private static readonly string _QueryableFirstOrDefaultMethodName = nameof(Queryable<int, int>.FirstOrDefault);
         private static readonly string _QueryableLastMethodName = nameof(Queryable<int, int>.Last);
         private static readonly string _QueryableTopMethodName = nameof(Queryable<int, int>.Top);
         private static readonly string _QueryableLimitMethodName = nameof(Queryable.Limit);
@@ -424,6 +425,11 @@ namespace GfdbFramework.Core
                                     queryable = queryable.Limit(new Limit(0, 1));
 
                                     resultField = (queryable.DataSource.SelectField ?? queryable.DataSource.RootField).ToSubquery(queryable.DataContext, queryable.DataSource, new Dictionary<Field.Field, Field.Field>());
+                                }
+                                //FirstOrDefault 方法，抛出异常
+                                else if (methodCallExpression.Method.Name == _QueryableFirstOrDefaultMethodName && methodParameters == null)
+                                {
+                                    throw new Exception("子查询不支持 FirstOrDefault 方法，请将其改为 First 实现");
                                 }
                                 //Last 方法，将转换成子查询
                                 else if (methodCallExpression.Method.Name == _QueryableLastMethodName && methodParameters == null)
@@ -1119,6 +1125,9 @@ namespace GfdbFramework.Core
                     if (!CheckIsBasicType(memberType))
                         throw new Exception(string.Format("不支持非基础数据类型的成员映射，若要忽略映射该成员，请配合使用 Attribute.MappingAttribute 和 Attribute.FieldAttribute 标记进行筛选，具体成员名称为：{0}.{1}", entityType.FullName, item.Name));
 
+                    if (fieldInfo.IsNullable == FieldNullableMode.Unknown)
+                        fieldInfo.IsNullable = memberType.IsValueType ? FieldNullableMode.NotNullable : FieldNullableMode.Nullable;
+
                     if (string.IsNullOrWhiteSpace(fieldInfo.DataType))
                         fieldInfo.DataType = dataContext.NetTypeToDBType(memberType);
 
@@ -1332,7 +1341,7 @@ namespace GfdbFramework.Core
         /// <returns>若该类型为基础数据类型时返回 true，否则返回 false。</returns>
         public static bool CheckIsBasicType(Type type)
         {
-            return type.IsPrimitive || type.IsEnum || type == _DecimalType || type == _DateTimeOffsetType || type == _TimeSpanType || type == _DateTimeType || type == _StringType || type == _GuidType || (type.IsGenericType && type.GetGenericTypeDefinition() == _NullableType);
+            return type.IsPrimitive || type.IsEnum || type == _DecimalType || type == _DateTimeOffsetType || type == _TimeSpanType || type == _DateTimeType || type == _StringType || type == _GuidType || (type.IsGenericType && type.GetGenericTypeDefinition() == _NullableType && CheckIsBasicType(type.GetGenericArguments()[0]));
         }
 
         /// <summary>

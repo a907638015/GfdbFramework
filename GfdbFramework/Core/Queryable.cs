@@ -611,6 +611,20 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
+        /// 获取当前对象数据源中的第一条成员信息（此方法内部使用 <see cref="Top(int)"/> 原理实现，若数据源中一条数据都没有的情况下则返回一个默认值）。
+        /// </summary>
+        /// <returns>若当前对象数据源中有数据时则返回数据源中第一条成员数据，否则返回 <typeparamref name="TSelect"/> 类型的默认值。</returns>
+        public TSelect FirstOrDefault()
+        {
+            Queryable<TSource, TSelect> queryable = Top(1);
+
+            if (queryable.Count < 1)
+                return default;
+            else
+                return queryable[0];
+        }
+
+        /// <summary>
         /// 获取当前对象数据源中的最后一条成员信息（若当前对象中包含有排序字段时，则会将这些字段进行反序排序然后再调用 <see cref="Top(int)"/> 方法来实现，否则将直接执行当前对象所代表的 Sql 语句，然后再返回结果集中的最后一行）。
         /// </summary>
         /// <returns>若当前对象数据源中有数据时则返回数据源中最后一条成员数据，否则抛出异常。</returns>

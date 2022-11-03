@@ -28,7 +28,7 @@ namespace GfdbFramework.Field
             IsAutoincrement = fieldAttribute.IsAutoincrement;
             IsInsertForDefault = fieldAttribute.IsInsertForDefault;
             IsUpdateForDefault = fieldAttribute.IsUpdateForDefault;
-            IsNullable = fieldAttribute.IsNullable;
+            IsNullable = fieldAttribute.IsNullable == Enum.FieldNullableMode.Nullable ? true : false;
             SimpleIndex = fieldAttribute.SimpleIndex == 0 ? null : (Enum.SortType?)fieldAttribute.SimpleIndex;
             IncrementSpeed = fieldAttribute.IncrementSpeed;
             IncrementSeed = fieldAttribute.IncrementSeed;

@@ -19,7 +19,7 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该商品品牌的唯一代码。
         /// </summary>
-        [Field(IsNullable = false, SimpleIndex = Enum.SortType.Ascending)]
+        [Field(IsNullable = Enum.FieldNullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
         public string Code { get; set; }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GfdbFramework.Enum;
 
 namespace GfdbFramework.Attribute
 {
@@ -29,7 +30,7 @@ namespace GfdbFramework.Attribute
         public FieldAttribute(string name)
         {
             Name = name;
-            IsNullable = true;
+            IsNullable = FieldNullableMode.Unknown;
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace GfdbFramework.Attribute
         /// <summary>
         /// 获取或设置一个值，该值指示当前成员映射的数据库表或视图字段是否允许为空。
         /// </summary>
-        public bool IsNullable { get; set; }
+        public FieldNullableMode IsNullable { get; set; }
 
         /// <summary>
         /// 获取或设置该字段的索引排序方式（若该值不为 0 时表示需要为该成员加上索引）。

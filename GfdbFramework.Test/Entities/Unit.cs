@@ -14,7 +14,7 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该商品单位的名称。
         /// </summary>
-        [Field(IsNullable = false, SimpleIndex = Enum.SortType.Ascending)]
+        [Field(IsNullable = Enum.FieldNullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
         public string Name { get; set; }
     }
 }
