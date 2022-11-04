@@ -1126,7 +1126,7 @@ namespace GfdbFramework.Core
                         throw new Exception(string.Format("不支持非基础数据类型的成员映射，若要忽略映射该成员，请配合使用 Attribute.MappingAttribute 和 Attribute.FieldAttribute 标记进行筛选，具体成员名称为：{0}.{1}", entityType.FullName, item.Name));
 
                     if (fieldInfo.IsNullable == FieldNullableMode.Unknown)
-                        fieldInfo.IsNullable = memberType.IsValueType ? FieldNullableMode.NotNullable : FieldNullableMode.Nullable;
+                        fieldInfo.IsNullable = memberType.IsValueType && !memberType.IsGenericType ? FieldNullableMode.NotNullable : FieldNullableMode.Nullable;
 
                     if (string.IsNullOrWhiteSpace(fieldInfo.DataType))
                         fieldInfo.DataType = dataContext.NetTypeToDBType(memberType);
