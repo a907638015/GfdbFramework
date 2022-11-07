@@ -10,7 +10,7 @@ namespace GfdbFramework.Interface
     /// <summary>
     /// 数据操作上下文对象接口类。
     /// </summary>
-    public interface IDataContext
+    public interface IDataContext : IDisposable
     {
         /// <summary>
         /// 获取一个用于执行各种数据库操作的执行对象。
