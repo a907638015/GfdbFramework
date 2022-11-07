@@ -280,5 +280,14 @@ namespace GfdbFramework.Realize
         {
             return _DatabaseOperation.DeleteTable(((DataSource.OriginalDataSource)modifiable.DataSource).Name);
         }
+
+        /// <summary>
+        /// 释放当前上下文所占用的资源信息。
+        /// </summary>
+        public virtual void Dispose()
+        {
+            _DatabaseOperation?.Dispose();
+            _ISqlFactory?.Dispose();
+        }
     }
 }

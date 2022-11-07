@@ -12,7 +12,7 @@ namespace GfdbFramework.Interface
     /// <summary>
     /// 各种 Sql 创建工厂接口类。
     /// </summary>
-    public interface ISqlFactory
+    public interface ISqlFactory : IDisposable
     {
         /// <summary>
         /// 初始化指定原始数据字段的 Sql 表示信息。
