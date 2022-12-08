@@ -686,6 +686,28 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
+        /// 将当前可查询对象中的所有数据转换成一个 List 集合。
+        /// </summary>
+        /// <returns>转换后的集合对象。</returns>
+        public List<TSelect> ToList()
+        {
+            InitResult();
+
+            return new List<TSelect>(_Result);
+        }
+
+        /// <summary>
+        /// 将当前可查询对象中的所有数据转换成一个数组对象。
+        /// </summary>
+        /// <returns>转换后的数组对象。</returns>
+        public TSelect[] ToArray()
+        {
+            InitResult();
+
+            return _Result.ToArray();
+        }
+
+        /// <summary>
         /// 对当前对象中的数据源查询返回结果进行限定。
         /// </summary>
         /// <param name="limit">需要限定返回的数据行信息。</param>
