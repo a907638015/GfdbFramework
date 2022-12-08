@@ -679,11 +679,15 @@ namespace GfdbFramework.Core
 
                                             resultField = new BinaryField(binaryField.DataType, binaryField.OperationType == OperationType.In ? OperationType.NotIn : OperationType.In, binaryField.Left, binaryField.Right);
                                         }
-                                        if (operand.Type == FieldType.Binary && (((BinaryField)operand).OperationType == OperationType.Like || ((BinaryField)operand).OperationType == OperationType.NotLike))
+                                        else if (operand.Type == FieldType.Binary && (((BinaryField)operand).OperationType == OperationType.Like || ((BinaryField)operand).OperationType == OperationType.NotLike))
                                         {
                                             BinaryField binaryField = (BinaryField)operand;
 
                                             resultField = new BinaryField(binaryField.DataType, binaryField.OperationType == OperationType.Like ? OperationType.NotLike : OperationType.Like, binaryField.Left, binaryField.Right);
+                                        }
+                                        else if (operand.Type == FieldType.Unary && ((UnaryField)operand).OperationType == OperationType.Not)
+                                        {
+                                            resultField = ((UnaryField)operand).Operand;
                                         }
                                         else
                                         {
