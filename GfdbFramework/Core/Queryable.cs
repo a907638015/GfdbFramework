@@ -119,6 +119,7 @@ namespace GfdbFramework.Core
         private List<TSelect> _Result = null;
         private string _QuerySql = null;
         private Interface.IReadOnlyList<DbParameter> _QueryParameters = null;
+        private readonly Type _NullableType = typeof(int?).GetGenericTypeDefinition();
 
         /// <summary>
         /// 使用指定的数据操作上下文以及数据源初始化一个新的 <see cref="Queryable{TSource, TSelect}"/> 类实例。
@@ -835,7 +836,7 @@ namespace GfdbFramework.Core
             {
                 object result = dr[((BasicField)field).Alias];
 
-                if (result == DBNull.Value)
+                if (result == null || result == DBNull.Value)
                     return null;
                 else
                     return ToTargetType(field.DataType, result);
@@ -854,6 +855,14 @@ namespace GfdbFramework.Core
 
             if (valueType != null && valueType == targetType)
                 return value;
+
+            if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == _NullableType)
+            {
+                if (value == null)
+                    return null;
+                else
+                    return ToTargetType(targetType.GetGenericArguments()[0], value);
+            }
 
             if (targetType.IsEnum)
             {
