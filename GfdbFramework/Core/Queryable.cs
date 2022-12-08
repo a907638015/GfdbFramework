@@ -117,6 +117,8 @@ namespace GfdbFramework.Core
     public class Queryable<TSource, TSelect> : Queryable, IEnumerable<TSelect>, Interface.IReadOnlyList<TSelect>
     {
         private List<TSelect> _Result = null;
+        private string _QuerySql = null;
+        private Interface.IReadOnlyList<DbParameter> _QueryParameters = null;
 
         /// <summary>
         /// 使用指定的数据操作上下文以及数据源初始化一个新的 <see cref="Queryable{TSource, TSelect}"/> 类实例。
@@ -675,7 +677,12 @@ namespace GfdbFramework.Core
         /// <returns>Sql 查询语句。</returns>
         public string GetSql(out Interface.IReadOnlyList<DbParameter> parameters)
         {
-            return DataContext.SqlFactory.GenerateQuerySql(DataContext, DataSource, out parameters);
+            if (_QuerySql == null)
+                _QuerySql = DataContext.SqlFactory.GenerateQuerySql(DataContext, DataSource, out _QueryParameters);
+
+            parameters = _QueryParameters;
+
+            return _QuerySql;
         }
 
         /// <summary>
@@ -707,7 +714,7 @@ namespace GfdbFramework.Core
             {
                 _Result = new List<TSelect>();
 
-                string querySql = DataContext.SqlFactory.GenerateQuerySql(DataContext, DataSource, out Interface.IReadOnlyList<DbParameter> parameters);
+                string querySql = GetSql(out Interface.IReadOnlyList<DbParameter> parameters);
 
                 Field.Field queryField = DataSource.SelectField ?? DataSource.RootField;
 
