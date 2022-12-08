@@ -1198,7 +1198,7 @@ namespace GfdbFramework.Core
                 return value?.ToString();
             }
 
-            throw new Exception(string.Format("无法将{0}的值转换成 {1} 类型的值", valueType == null ? " null 值 " : string.Format(" {0} 类型的值", valueType.FullName), targetType.FullName));
+            throw new Exception(string.Format("无法将{0}转换成 {1} 类型的值", valueType == null ? " null 值 " : string.Format(" {0} 类型的值", valueType.FullName), targetType.FullName));
         }
 
         /// <summary>
