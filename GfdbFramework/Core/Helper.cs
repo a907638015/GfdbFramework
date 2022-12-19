@@ -549,7 +549,7 @@ namespace GfdbFramework.Core
                         //若调用之前的对象类型不是 Queryable 类型但返回值为 Queryable 类型
                         else if (body.Type.IsSubclassOf(_QueryableType))
                         {
-                            //若包含了非允许时常量参数则抛出异常
+                            //若包含了非运行时常量参数则抛出异常
                             if (isExistFieldParameter)
                                 throw new Exception(string.Format("对于调用方法获取 Queryable 对象时，调用参数不得包含非运行时常量，调用方法为（实例方法）：{0}.{1}", methodCallExpression.Method.ReflectedType.FullName, methodCallExpression.Method.Name));
                             else
