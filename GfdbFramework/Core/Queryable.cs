@@ -1197,6 +1197,56 @@ namespace GfdbFramework.Core
             {
                 return value?.ToString();
             }
+            else if (targetType.FullName == "System.Single")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is uint uintValue)
+                    return (float)uintValue;
+                else if (value is long longValue)
+                    return (float)longValue;
+                else if (value is ulong ulongValue)
+                    return (float)ulongValue;
+                else if (value is short shortValue)
+                    return (float)shortValue;
+                else if (value is ushort ushortValue)
+                    return (float)ushortValue;
+                else if (value is byte byteValue)
+                    return (float)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (float)sbyteValue;
+                else if (value is double doubleValue)
+                    return (float)doubleValue;
+                else if (value is string stringValue)
+                    return float.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
+            else if (targetType.FullName == "System.Double")
+            {
+                if (value == null)
+                    throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is uint uintValue)
+                    return (double)uintValue;
+                else if (value is long longValue)
+                    return (double)longValue;
+                else if (value is ulong ulongValue)
+                    return (double)ulongValue;
+                else if (value is short shortValue)
+                    return (double)shortValue;
+                else if (value is ushort ushortValue)
+                    return (double)ushortValue;
+                else if (value is byte byteValue)
+                    return (double)byteValue;
+                else if (value is sbyte sbyteValue)
+                    return (double)sbyteValue;
+                else if (value is float floatValue)
+                    return (double)floatValue;
+                else if (value is string stringValue)
+                    return double.Parse(stringValue);
+                else
+                    throw new Exception(string.Format("无法将 {0} 类型的值转换成 {1} 类型的值", valueType.FullName, targetType.FullName));
+            }
 
             throw new Exception(string.Format("无法将{0}转换成 {1} 类型的值", valueType == null ? " null 值 " : string.Format(" {0} 类型的值", valueType.FullName), targetType.FullName));
         }
