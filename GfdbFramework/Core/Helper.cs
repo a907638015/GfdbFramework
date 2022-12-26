@@ -18,6 +18,7 @@ namespace GfdbFramework.Core
     public static class Helper
     {
         private static readonly Type _IListType = typeof(IList<>);
+        private static readonly Type _HashSetType = typeof(HashSet<>);
         private static readonly Type _Int32Type = typeof(int);
         private static readonly Type _DateTimeType = typeof(DateTime);
         private static readonly Type _DateTimeOffsetType = typeof(DateTimeOffset);
@@ -67,6 +68,7 @@ namespace GfdbFramework.Core
         private static readonly string _HelperContainsMethodName = nameof(Contains);
         private static readonly string _HelperLikeMethodName = nameof(Like);
         private static readonly string _IListContainsMethodName = nameof(IList<int>.Contains);
+        private static readonly string _HashSetContainsMethodName = nameof(HashSet<int>.Contains);
         private static readonly string _QueryableCountPropertyName = nameof(Queryable<int, int>.Count);
         private static MethodInfo _QueryableSelectMethod = null;
         private static MethodInfo _QueryableDistinctMethod = null;
@@ -561,6 +563,9 @@ namespace GfdbFramework.Core
                             //若调用方法为 IList<?>.Contains 方法
                             if (methodCallExpression.Method.Name == _IListContainsMethodName && methodExampleField.Type == FieldType.Constant && CheckIsList(methodCallExpression.Method.DeclaringType) && methodParameters != null && methodParameters.Length == 1 && methodParameters[0] is BasicField basicParameter && CheckIsBasicType(methodParameters[0].DataType))
                                 resultField = new BinaryField(body.Type, OperationType.In, basicParameter, (ConstantField)methodExampleField);
+                            //若调用方法为 HashSet<?>.Contains 方法
+                            else if (methodCallExpression.Method.Name == _HashSetContainsMethodName && methodExampleField.Type == FieldType.Constant && methodCallExpression.Method.DeclaringType.IsGenericType && _HashSetType.IsAssignableFrom(methodCallExpression.Method.DeclaringType.GetGenericTypeDefinition()) && methodParameters != null && methodParameters.Length == 1 && methodParameters[0] is BasicField && CheckIsBasicType(methodParameters[0].DataType))
+                                resultField = new BinaryField(body.Type, OperationType.In, (BasicField)methodParameters[0], (ConstantField)methodExampleField);
                             else
                                 resultField = new MethodField(methodExampleField, methodCallExpression.Method, methodParameters);
                         }

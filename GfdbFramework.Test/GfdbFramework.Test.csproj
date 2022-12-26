@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GfdbFramework.SqlServer" Version="1.3.3" />
+    <PackageReference Include="GfdbFramework.SqlServer" Version="1.3.13" />
   </ItemGroup>
 
   <ItemGroup>

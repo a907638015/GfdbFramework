@@ -18,6 +18,12 @@ namespace GfdbFramework.Test
 
         static void Main(string[] args)
         {
+            HashSet<string> ss = new HashSet<string>
+            {
+                "aa",
+                "bb"
+            };
+
             DataContext dataContext = new DataContext();
 
             if (!dataContext.ExistsDatabase("TestDB2"))
@@ -117,6 +123,8 @@ namespace GfdbFramework.Test
                     });
                 }
             }
+
+            dataContext.Classifies.Where(item => ss.Contains(item.Name));
 
             Console.WriteLine($"{Environment.NewLine}----- 获取 Users 表中所有数据 ----{Environment.NewLine}");
 
