@@ -1201,6 +1201,8 @@ namespace GfdbFramework.Core
             {
                 if (value == null)
                     throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (float)intValue;
                 else if (value is uint uintValue)
                     return (float)uintValue;
                 else if (value is long longValue)
@@ -1226,6 +1228,8 @@ namespace GfdbFramework.Core
             {
                 if (value == null)
                     throw new Exception(string.Format("无法将 null 值转换成 {0} 类型的值", targetType.FullName));
+                else if (value is int intValue)
+                    return (double)intValue;
                 else if (value is uint uintValue)
                     return (double)uintValue;
                 else if (value is long longValue)
