@@ -178,7 +178,6 @@ foreach (var item in data)
     Console.WriteLine($"商品名称：{item.Name}，分类：{item.Classify}，最大包装单位：{item.PackageUnit}，中包包装单位：{item.MiddleUnit}，零售包装单位：{ item.MinimumUnit}，品牌：{ item.Brand}");
 }
 ```
-```
 16. 数据合并 union all（查询 ID 大于 1 的用户名以及 ID 大于 1 的商品名）
 ```c#
 DataContext dataContext = new DataContext();
