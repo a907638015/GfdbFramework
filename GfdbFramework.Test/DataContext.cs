@@ -21,7 +21,7 @@ namespace GfdbFramework.Test
         /// 初始化一个新的 <see cref="DataContext"/> 类实例。
         /// </summary>
         public DataContext()
-            : base("Sql Server 2012", "data source=.;database=TestDB2;uid=sa;pwd=sasasa")
+            : base("Sql Server 2012", "data source=.;database=TestDB2;uid=sa;pwd=woshi38961")
         {
 
         }

@@ -8,31 +8,31 @@ namespace GfdbFramework.Test.Entities
     /// <summary>
     /// 用户信息实体类。
     /// </summary>
-    [Mapping("Users")]
+    [Table("Users")]
     public class User : BaseEntity
     {
         /// <summary>
         /// 获取或设置该用户的登录账号。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
         public string Account { get; set; }
 
         /// <summary>
         /// 获取或设置该用户的登录密码。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string Password { get; set; }
 
         /// <summary>
         /// 获取或设置该用户的名称。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string Name { get; set; }
 
         /// <summary>
         /// 获取或设置该用户的工号。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
         public string JobNumber { get; set; }
 
         /// <summary>

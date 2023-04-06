@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using GfdbFramework.Attribute;
 using GfdbFramework.Core;
-using GfdbFramework.Realize;
 
 namespace GfdbFramework.Test
 {
@@ -20,11 +19,11 @@ namespace GfdbFramework.Test
         {
             DataContext dataContext = new DataContext();
 
-            if (!dataContext.ExistsDatabase("TestDB2"))
+            if (!dataContext.ExistsDatabase(new DatabaseInfo("TestDB2")))
             {
                 Console.WriteLine($"{Environment.NewLine}----- 初始化数据库 ----{Environment.NewLine}");
 
-                //创建数据库（在测试时建议给当前程序目录添加 Everyone 的全部访问权限，不然极有可能报 拒绝访问 错误信息）
+                //创建数据库（在测试时若代码位置在 C 盘，建议给当前程序目录添加 Everyone 的全部访问权限，不然极有可能报 拒绝访问 错误信息，其他盘无此问题）
                 dataContext.CreateDatabase(new DatabaseInfo("TestDB2"));
 
                 //创建各种表
@@ -53,10 +52,10 @@ namespace GfdbFramework.Test
                     Console.WriteLine($"新增用户 ID 为：{user.ID}");
                 }
 
-                //添加分类信息
+                //添加分类信息（此处传入实体类，创建用户 ID 每循环一次则用 Sql 查询一次）
                 for (int i = 0; i < classifyNames.Length; i++)
                 {
-                    //此处会生成两个插入 SQL，第一条 SQL 先去随机获得一个用户 ID，然后再将这个 ID 传入插入 SQL 作为变量使用
+                    //此处会执行两个 SQL，第一条 SQL 执行后随机得到一个用户 ID，然后再将这个 ID 赋值为实体对象的属性值，然后再调用 Insert 方法
                     dataContext.Classifies.Insert(new Entities.Classify()
                     {
                         Code = GetRandomString(6),
@@ -66,7 +65,7 @@ namespace GfdbFramework.Test
                     });
                 }
 
-                //添加品牌信息
+                //添加品牌信息（此处传入匿名函数，创建用户 ID 使用子查询查询）
                 for (int i = 0; i < brandNames.Length; i++)
                 {
                     //此处只会生成一个插入 SQL， CreateUID 的值会改成子查询
@@ -129,7 +128,7 @@ namespace GfdbFramework.Test
             Console.WriteLine($"{Environment.NewLine}----- 查询创建 波力海苔 以及 人参果 两个商品的用户信息（条件 in） ----{Environment.NewLine}");
 
             //条件 in （查询创建 波力海苔 以及 人参果 两个商品的用户信息）
-            var users = dataContext.Users.Where(user => dataContext.Commodities.Select(commodity => commodity.ID).Where(commodity => commodity.Name == "波力海苔" || commodity.Name == "人参果").Contains(user.ID));
+            var users = dataContext.Users.Where(user => Extend.Contains(dataContext.Commodities.Select(commodity => commodity.ID).Where(commodity => commodity.Name == "波力海苔" || commodity.Name == "人参果"), user.ID));
 
             foreach (var item in users)
             {
@@ -161,7 +160,7 @@ namespace GfdbFramework.Test
             //主键删除（将 ID 值为 100 的用户删除）
             Console.WriteLine(dataContext.Users.Delete(100) ? "删除成功" : "删除失败");
 
-            Console.WriteLine($"{Environment.NewLine}----- 查询所有商品名称以及创建该商品的用户名（内连接） ----{Environment.NewLine}");
+            Console.WriteLine($"{Environment.NewLine}----- 查询所有商品名称以及创建该商品的用户名（直连接） ----{Environment.NewLine}");
 
             //内连接（查询所有商品名称以及创建该商品的用户名）
             var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => new
@@ -249,6 +248,24 @@ namespace GfdbFramework.Test
             foreach (var item in data2)
             {
                 Console.WriteLine($"商品名称：{item.Name}，分类：{item.Classify}，最大包装单位：{item.PackageUnit}，中包包装单位：{item.MiddleUnit}，零售包装单位：{ item.MinimumUnit}，品牌：{ item.Brand}");
+            }
+
+            //数据合并 union all（查询 ID 大于 1 的用户名以及 ID 大于 1 的商品名）
+            var data3 = dataContext.Users.Select(item => new
+            {
+                item.ID,
+                item.Name,
+                Type = "User"
+            }).Where(item => item.ID > 1).UnionAll(dataContext.Commodities.Select(item => new
+            {
+                item.ID,
+                item.Name,
+                Type = "Commodity"
+            }).Where(item => item.ID > 1));
+
+            foreach (var item in data3)
+            {
+                Console.WriteLine($"类型：{(item.Type == "User" ? "用户：" : "商品：")}{item.Name} ID:{item.ID}");
             }
         }
 

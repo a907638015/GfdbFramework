@@ -8,13 +8,13 @@ namespace GfdbFramework.Test.Entities
     /// <summary>
     /// 商品信息实体类。
     /// </summary>
-    [Mapping("Commodities")]
+    [Table("Commodities")]
     public class Commodity : BaseEntity
     {
         /// <summary>
         /// 获取或设置该商品的名称。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string Name { get; set; }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该商品的唯一代码。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable, SimpleIndex = Enum.SortType.Ascending)]
         public string Code { get; set; }
 
         /// <summary>
@@ -92,19 +92,19 @@ namespace GfdbFramework.Test.Entities
         /// <summary>
         /// 获取或设置该商品的运输包裹规格。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string PackageNorms { get; set; }
 
         /// <summary>
         /// 获取或设置该商品的中包包装规格。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string MiddleNorms { get; set; }
 
         /// <summary>
         /// 获取或设置该商品的最小包装规格。
         /// </summary>
-        [Field(IsNullable = Enum.FieldNullableMode.NotNullable)]
+        [Field(IsNullable = Enum.NullableMode.NotNullable)]
         public string MinimumNorms { get; set; }
     }
 }
