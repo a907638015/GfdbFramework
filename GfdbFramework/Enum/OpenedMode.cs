@@ -7,7 +7,7 @@ namespace GfdbFramework.Enum
     /// <summary>
     /// 数据库连接打开方式枚举（枚举项的整数值按优先级升序排序）。
     /// </summary>
-    public enum ConnectionOpenedMode
+    public enum OpenedMode
     {
         /// <summary>
         /// 自动打开（该方式打开的连接在每次执行完命令后都应当关闭连接）。

@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 实体类到数据库表或视图的映射方式枚举。
+    /// 实体类到数据库表或视图字段的映射关系枚举类。
     /// </summary>
     public enum MappingType
     {

@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// 对查询数据结果进行数据行限定的结构体。
+    /// 数据结果集限定结构类。
     /// </summary>
     public struct Limit
     {

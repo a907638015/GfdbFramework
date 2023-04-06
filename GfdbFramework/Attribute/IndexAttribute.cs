@@ -7,6 +7,7 @@ namespace GfdbFramework.Attribute
     /// <summary>
     /// 数据库表索引标记类。
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
     public class IndexAttribute : System.Attribute
     {
         /// <summary>

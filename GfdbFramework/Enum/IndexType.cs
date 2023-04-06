@@ -5,10 +5,11 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 数据库表索引类型枚举。
+    /// 数据库索引类型枚举。
     /// </summary>
     public enum IndexType
     {
+
         /// <summary>
         /// 常规索引。
         /// </summary>
@@ -22,11 +23,11 @@ namespace GfdbFramework.Enum
         /// </summary>
         Composite = 2,
         /// <summary>
-        /// 全文索引（部分数据库可能不支持）。
+        /// 全文索引。
         /// </summary>
         FullText = 3,
         /// <summary>
-        /// 哈希索引（部分数据库可能不支持）。
+        /// 哈希索引。
         /// </summary>
         Hash = 4
     }

@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// 通用数据库函数（仅包含常见函数，其他非常见函数请自定义方法然后打上 <see cref="Attribute.DBFunctionAttribute"/> 标记，再实现 <see cref="Interface.ISqlFactory"/> 即可）。
+    /// 通用数据库函数（仅包含常见函数，其他非常见函数请自定义方法然后打上 <see cref="Attribute.DBFunAttribute"/> 标记）。
     /// </summary>
     public static class DBFun
     {
@@ -14,9 +14,29 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 聚合函数，用于统计查询结果中某列具体值所出现的次数。
         /// </summary>
+        /// <typeparam name="T">需要获取出现次数的列数据类型。</typeparam>
         /// <param name="cellValue">待统计列中的值。</param>
         /// <returns>查询结果中指定列具体值所出现的次数。</returns>
-        public static int Count(object cellValue)
+        public static int Count<T>(T cellValue) where T : struct
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 聚合函数，用于统计查询结果中某列具体值所出现的次数。
+        /// </summary>
+        /// <param name="cellValue">待统计列中的值。</param>
+        /// <returns>查询结果中指定列具体值所出现的次数。</returns>
+        public static int Count(string cellValue)
+        {
+            throw new Exception(_CALL_EXCEPTION_MESSAGE);
+        }
+
+        /// <summary>
+        /// 聚合函数，用于统计查询结果集中的数据条数。
+        /// </summary>
+        /// <returns>查询结果集中的数据条数。</returns>
+        public static int Count()
         {
             throw new Exception(_CALL_EXCEPTION_MESSAGE);
         }
@@ -216,15 +236,6 @@ namespace GfdbFramework.Core
         /// </summary>
         /// <returns>生成好指定范围内的随机 32 位整数值。</returns>
         public static Guid NewInt(int min, int max)
-        {
-            throw new Exception(_CALL_EXCEPTION_MESSAGE);
-        }
-
-        /// <summary>
-        /// 聚合函数，用于统计查询结果集中的数据条数。
-        /// </summary>
-        /// <returns>查询结果集中的数据条数。</returns>
-        public static int Count()
         {
             throw new Exception(_CALL_EXCEPTION_MESSAGE);
         }

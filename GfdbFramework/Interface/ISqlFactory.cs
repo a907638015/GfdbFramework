@@ -1,196 +1,258 @@
-﻿using System;
+﻿using GfdbFramework.Core;
+using GfdbFramework.DataSource;
+using GfdbFramework.Field;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
-using GfdbFramework.Core;
-using GfdbFramework.DataSource;
-using GfdbFramework.Enum;
-using GfdbFramework.Field;
 
 namespace GfdbFramework.Interface
 {
     /// <summary>
-    /// 各种 Sql 创建工厂接口类。
+    /// 各种 Sql 语句的创建工厂接口类。
     /// </summary>
-    public interface ISqlFactory : IDisposable
+    public interface ISqlFactory
     {
         /// <summary>
-        /// 初始化指定原始数据字段的 Sql 表示信息。
+        /// 创建一元操作字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitOriginalField(IDataContext dataContext, DataSource.DataSource dataSource, OriginalField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的一元操作字段。</param>
+        /// <returns>该一元操作字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateUnaryBasicSql(IParameterContext parameterContext, UnaryField field);
 
         /// <summary>
-        /// 初始化指定基础数据类型字段被直接用做 Where、On、Case 等条件判定时的 Sql 表示信息（如原始 Bit 类型字段直接用作 Where 条件时需要写成 Table.FieldName = 1）。
+        /// 创建一元操作字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">需要生成 Where、On、Case 等条件判定表示 Sql 信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好用于在 Where、On、Case 等条件判定时的 Sql 表示信息。</returns>
-        ExpressionInfo InitFieldWhere(IDataContext dataContext, DataSource.DataSource dataSource, BasicField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的一元操作字段。</param>
+        /// <returns>该一元操作字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateUnaryBoolSql(IParameterContext parameterContext, UnaryField field);
 
         /// <summary>
-        /// 初始化指定一元操作字段的 Sql 表示信息。
+        /// 创建原始数据库表或视图字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitUnaryField(IDataContext dataContext, DataSource.DataSource dataSource, UnaryField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的原始字段。</param>
+        /// <returns>该原始数据库表或视图字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateOriginalBasicSql(IParameterContext parameterContext, OriginalField field);
 
         /// <summary>
-        /// 初始化指定二元操作字段的 Sql 表示信息。
+        /// 创建原始数据库表或视图字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitBinaryField(IDataContext dataContext, DataSource.DataSource dataSource, BinaryField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的原始字段。</param>
+        /// <returns>该原始数据库表或视图字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateOriginalBoolSql(IParameterContext parameterContext, OriginalField field);
 
         /// <summary>
-        /// 初始化指定三元操作（条件操作）字段的 Sql 表示信息。
+        /// 创建子查询字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitConditionalField(IDataContext dataContext, DataSource.DataSource dataSource, ConditionalField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的子查询字段。</param>
+        /// <returns>该子查询字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateSubqueryBasicSql(IParameterContext parameterContext, SubqueryField field);
 
         /// <summary>
-        /// 初始化指定方法调用字段的 Sql 表示信息。
+        /// 创建子查询字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitMethodField(IDataContext dataContext, DataSource.DataSource dataSource, MethodField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的子查询字段。</param>
+        /// <returns>该子查询字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateSubqueryBoolSql(IParameterContext parameterContext, SubqueryField field);
 
         /// <summary>
-        /// 初始化指定成员调用字段的 Sql 表示信息。
+        /// 创建二元操作字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitMemberField(IDataContext dataContext, DataSource.DataSource dataSource, MemberField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的二元操作字段。</param>
+        /// <returns>该二元操作字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateBinaryBasicSql(IParameterContext parameterContext, BinaryField field);
 
         /// <summary>
-        /// 初始化指定引用字段的 Sql 表示信息。
+        /// 创建二元操作字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitQuoteField(IDataContext dataContext, DataSource.DataSource dataSource, QuoteField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的二元操作字段。</param>
+        /// <returns>该二元操作字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateBinaryBoolSql(IParameterContext parameterContext, BinaryField field);
 
         /// <summary>
-        /// 初始化指定子查询字段的 Sql 表示信息。
+        /// 创建三元操作字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitSubqueryField(IDataContext dataContext, DataSource.DataSource dataSource, SubqueryField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的三元操作字段。</param>
+        /// <returns>该三元操作字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateConditionalBasicSql(IParameterContext parameterContext, ConditionalField field);
 
         /// <summary>
-        /// 初始化指定 Switch 分支字段的 Sql 表示信息。
+        /// 创建三元操作字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitSwitchField(IDataContext dataContext, DataSource.DataSource dataSource, SwitchField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的三元操作字段。</param>
+        /// <returns>该三元操作字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateConditionalBoolSql(IParameterContext parameterContext, ConditionalField field);
 
         /// <summary>
-        /// 初始化指定常量字段的 Sql 表示信息。
+        /// 创建常量字段的基础表示 Sql 信息。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成 Sql 表示信息字段所归属的数据源信息。</param>
-        /// <param name="field">待生成 Sql 表示信息的字段。</param>
-        /// <param name="addParameter">添加 Sql 所需的参数方法（参数为需要添加的参数，返回值代表该参数的变量名）。</param>
-        /// <returns>生成好的表示 Sql 信息。</returns>
-        ExpressionInfo InitConstantField(IDataContext dataContext, DataSource.DataSource dataSource, ConstantField field, Func<object, string> addParameter);
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的常量字段。</param>
+        /// <returns>该常量字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateConstantBasicSql(IParameterContext parameterContext, ConstantField field);
 
         /// <summary>
-        /// 使用指定的别名下标生成一个别名（必须保证不同下标生成的别名不同，相同下标生成的别名相同，且所生成的别名不得是数据库中的关键字）。
+        /// 创建常量字段的布尔表示 Sql 信息。
         /// </summary>
-        /// <param name="aliasIndex">生成别名时的下标。</param>
-        /// <param name="type">需要生成别名的名称类型。</param>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的常量字段。</param>
+        /// <returns>该常量字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateConstantBoolSql(IParameterContext parameterContext, ConstantField field);
+
+        /// <summary>
+        /// 创建成员调用字段的基础表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的成员调用字段。</param>
+        /// <returns>该成员调用字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateMemberBasicSql(IParameterContext parameterContext, MemberField field);
+
+        /// <summary>
+        /// 创建成员调用字段的布尔表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的成员调用字段。</param>
+        /// <returns>该成员调用字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateMemberBoolSql(IParameterContext parameterContext, MemberField field);
+
+        /// <summary>
+        /// 创建方法调用字段的基础表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的方法调用字段。</param>
+        /// <returns>该方法调用字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateMethodBasicSql(IParameterContext parameterContext, MethodField field);
+
+        /// <summary>
+        /// 创建方法调用字段的布尔表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的方法调用字段。</param>
+        /// <returns>该方法调用字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateMethodBoolSql(IParameterContext parameterContext, MethodField field);
+
+        /// <summary>
+        /// 创建引用字段的基础表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的引用字段。</param>
+        /// <returns>该引用字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateQuoteBasicSql(IParameterContext parameterContext, QuoteField field);
+
+        /// <summary>
+        /// 创建引用字段的布尔表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的引用字段。</param>
+        /// <returns>该引用字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateQuoteBoolSql(IParameterContext parameterContext, QuoteField field);
+
+        /// <summary>
+        /// 创建 Switch 分支字段的布尔表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的 Switch 分支字段。</param>
+        /// <returns>该 Switch 分支字段对应的布尔 Sql 表示结果。</returns>
+        ExpressionInfo CreateSwitchBoolSql(IParameterContext parameterContext, SwitchField field);
+
+        /// <summary>
+        /// 创建 Switch 分支字段的基础表示 Sql 信息。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="field">待创建表示 Sql 信息的 Switch 分支字段。</param>
+        /// <returns>该 Switch 分支字段对应的基础 Sql 表示结果。</returns>
+        ExpressionInfo CreateSwitchBasicSql(IParameterContext parameterContext, SwitchField field);
+
+        /// <summary>
+        /// 生成指定数据源对应的查询 Sql 语句。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="dataSource">待生成语句的数据源对象。</param>
+        /// <returns>生成好的查询 Sql 语句。</returns>
+        string GenerateSelectSql(IParameterContext parameterContext, BasicDataSource dataSource);
+
+        /// <summary>
+        /// 生成指定数据源对应的插入 Sql 语句。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="dataSource">待生成语句的数据源对象。</param>
+        /// <param name="fields">需要插入的字段集合。</param>
+        /// <param name="args">需要插入字段对应的参数集合。</param>
+        /// <returns>生成好的插入 Sql 语句。</returns>
+        string GenerateInsertSql(IParameterContext parameterContext, TableDataSource dataSource, ReadOnlyList<OriginalField> fields, ReadOnlyList<BasicField> args);
+
+        /// <summary>
+        /// 生成指定数据源对应的插入 Sql 语句。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="dataSource">待生成语句的数据源对象。</param>
+        /// <param name="insertDataSource">需要插入到数据表的数据源。</param>
+        /// <returns>生成好的插入 Sql 语句。</returns>
+        string GenerateInsertSql(IParameterContext parameterContext, TableDataSource dataSource, BasicDataSource insertDataSource);
+
+        /// <summary>
+        /// 生成指定数据源对应的删除 Sql 语句。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="deletingDataSources">需要删除数据行的源数组。</param>
+        /// <param name="fromDataSource">待删除数据行的目标来源。</param>
+        /// <param name="where">删除数据行时的条件字段。</param>
+        /// <returns>生成好的删除 Sql 语句。</returns>
+        string GenerateDeleteSql(IParameterContext parameterContext, TableDataSource[] deletingDataSources, DataSource.DataSource fromDataSource, BasicField where);
+
+        /// <summary>
+        /// 生成指定数据源对应的更新 Sql 语句。
+        /// </summary>
+        /// <param name="parameterContext">创建表示 Sql 时用于参数化操作的上下文对象。</param>
+        /// <param name="updateGroups">所有待更新的数据组。</param>
+        /// <param name="fromDataSource">待更新数据的目标来源。</param>
+        /// <param name="where">更新数据行时的条件字段。</param>
+        /// <returns>生成好的更新 Sql 语句。</returns>
+        string GenerateUpdateSql(IParameterContext parameterContext, ReadOnlyList<UpdateGroup> updateGroups, DataSource.DataSource fromDataSource, BasicField where);
+
+        /// <summary>
+        /// 使用指定的别名下标生成一个字段别名（必须保证不同下标生成的别名不同，相同下标生成的别名相同，且所生成的别名不得是数据库中的关键字）。
+        /// </summary>
+        /// <param name="aliasIndex">生成别名所使用的下标。</param>
         /// <returns>使用指定别名下标生成好的别名。</returns>
-        string GenerateAlias(int aliasIndex, NameType type);
+        string GenerateFieldAlias(int aliasIndex);
 
         /// <summary>
-        /// 对指定的原始字段名、表名或视图名称进行编码。
+        /// 使用指定的别名下标生成一个数据源别名（必须保证不同下标生成的别名不同，相同下标生成的别名相同，且所生成的别名不得是数据库中的关键字）。
         /// </summary>
-        /// <param name="name">需要编码的原始字段名、表名或视图名称名称。</param>
-        /// <param name="type">名称类型。</param>
+        /// <param name="aliasIndex">生成别名所使用的下标。</param>
+        /// <returns>使用指定别名下标生成好的别名。</returns>
+        string GenerateDataSourceAlias(int aliasIndex);
+
+        /// <summary>
+        /// 对指定的原始字段名进行编码。
+        /// </summary>
+        /// <param name="name">需要编码的原始字段名。</param>
         /// <returns>编码后的名称。</returns>
-        string EncodeName(string name, NameType type);
+        string EncodeFieldName(string name);
 
         /// <summary>
-        /// 生成指定数据源所对应的 Sql 查询语句。
+        /// 对指定的原始表名进行编码。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成查询 Sql 的数据源信息。</param>
-        /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
-        /// <returns>生成好的 Sql 查询语句。</returns>
-        string GenerateQuerySql(IDataContext dataContext, BasicDataSource dataSource, out IReadOnlyList<DbParameter> parameters);
+        /// <param name="name">需要编码的原始表名。</param>
+        /// <returns>编码后的名称。</returns>
+        string EncodeTableName(string name);
 
         /// <summary>
-        /// 生成指定数据表的插入 Sql 语句。
+        /// 对指定的原始视图名进行编码。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成插入 Sql 语句的原始数据源对象。</param>
-        /// <param name="fields">需要插入的字段集合。</param>
-        /// <param name="values">需要插入字段对应的值集合。</param>
-        /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
-        /// <returns>生成好的插入 Sql 语句。</returns>
-        string GenerateInsertSql(IDataContext dataContext, OriginalDataSource dataSource, IReadOnlyList<OriginalField> fields, IReadOnlyList<BasicField> values, out IReadOnlyList<DbParameter> parameters);
-
-        /// <summary>
-        /// 生成指定数据表的插入 Sql 语句。
-        /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">待生成插入 Sql 语句的原始数据源对象。</param>
-        /// <param name="fields">需要插入的字段集合。</param>
-        /// <param name="entitys">需要插入的查询结果数据源。</param>
-        /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
-        /// <returns>生成好的插入 Sql 语句。</returns>
-        string GenerateInsertSql(IDataContext dataContext, OriginalDataSource dataSource, IReadOnlyList<OriginalField> fields, BasicDataSource entitys, out IReadOnlyList<DbParameter> parameters);
-
-        /// <summary>
-        /// 生成指定数据表的数据删除 Sql 语句。
-        /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="deleteSources">待删除数据行的源数组。</param>
-        /// <param name="fromSource">待删除数据行的来源数据。</param>
-        /// <param name="where">删除时的条件限定字段信息。</param>
-        /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
-        /// <returns>生成好的数据删除 Sql 语句。</returns>
-        string GenerateDeleteSql(IDataContext dataContext, OriginalDataSource[] deleteSources, DataSource.DataSource fromSource, BasicField where, out IReadOnlyList<DbParameter> parameters);
-
-        /// <summary>
-        /// 生成指定数据表的数据更新 Sql 语句。
-        /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="modifyFields">需要修改的字段信息集合。</param>
-        /// <param name="dataSource">待修改数据的来源数据。</param>
-        /// <param name="where">修改时的条件限定字段信息。</param>
-        /// <param name="parameters">执行生成 Sql 所需使用的参数集合。</param>
-        /// <returns>生成好的数据更新 Sql 语句。</returns>
-        string GenerateUpdateSql(IDataContext dataContext, IReadOnlyList<ModifyInfo> modifyFields, DataSource.DataSource dataSource, BasicField where, out IReadOnlyList<DbParameter> parameters);
+        /// <param name="name">需要编码的原始视图名。</param>
+        /// <returns>编码后的名称。</returns>
+        string EncodeViewName(string name);
     }
 }

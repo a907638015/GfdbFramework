@@ -1,23 +1,25 @@
-﻿using System;
+﻿using GfdbFramework.Enum;
+using GfdbFramework.Interface;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using GfdbFramework.Enum;
 
 namespace GfdbFramework.Field
 {
     /// <summary>
-    /// 带有具体操作的字段类。
+    /// 带有具体操作的基础字段类。
     /// </summary>
     public abstract class OperationField : BasicField
     {
         /// <summary>
-        /// 使用指定的字段类型、字段返回值的数据类型以及字段的操作类型初始化一个新的 <see cref="OperationField"/> 类实例。
+        /// 使用指定的数据操作上下文、字段类型、字段返回数据类型以及该字段的操作类型初始化一个新的 <see cref="OperationField"/> 类实例。
         /// </summary>
-        /// <param name="type">该字段的类型。</param>
-        /// <param name="dataType">该字段返回值的数据类型。</param>
+        /// <param name="dataContext">该字段所使用的数据操作上下文。</param>
+        /// <param name="fieldType">该字段的类型。</param>
+        /// <param name="dataType">该字段所返回的数据类型。</param>
         /// <param name="operationType">该字段的操作类型。</param>
-        internal OperationField(FieldType type, Type dataType, OperationType operationType)
-            : base(type, dataType)
+        internal OperationField(IDataContext dataContext, FieldType fieldType, Type dataType, OperationType operationType)
+            : base(dataContext, fieldType, dataType)
         {
             OperationType = operationType;
         }

@@ -1,119 +1,58 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text;
-using GfdbFramework.Core;
+﻿using GfdbFramework.Core;
 using GfdbFramework.DataSource;
 using GfdbFramework.Enum;
 using GfdbFramework.Interface;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GfdbFramework.Field
 {
     /// <summary>
     /// .Net 集合或数组字段类。
     /// </summary>
-    public class CollectionField : Field, Interface.IReadOnlyList<Field>
+    public class CollectionField : Field, IEnumerable<Field>
     {
-        private readonly Interface.IReadOnlyList<Field> _Members = null;
+        private readonly ReadOnlyList<Field> _Fields = null;
 
         /// <summary>
-        /// 使用指定的字段类型、字段对应 .NET 框架类的构造信息、新增成员的方法信息以及该字段所包含的成员集合初始化一个新的 <see cref="CollectionField"/> 类实例。
+        /// 使用指定的数据操作上下文、字段返回数据类型、对象字段对应类的构造信息、新增成员的方法信息以及该字段所包含的成员集合初始化一个新的 <see cref="CollectionField"/> 类实例。
         /// </summary>
+        /// <param name="dataContext">该字段所使用的数据操作上下文。</param>
         /// <param name="dataType">该字段返回值的数据类型。</param>
         /// <param name="constructorInfo">该对象字段对应 .NET 框架类的构造函数信息。</param>
         /// <param name="addMethodInfo">该对象字段对应 .NET 框架类的新增成员函数信息。</param>
-        /// <param name="members">该字段所包含的成员集合。</param>
-        internal CollectionField(Type dataType, Core.ConstructorInfo constructorInfo, MethodInfo addMethodInfo, IEnumerable<Field> members)
-            : base(FieldType.Collection, dataType)
+        /// <param name="fields">该字段所包含的成员集合。</param>
+        internal CollectionField(IDataContext dataContext, Type dataType, ConstructorInfo constructorInfo, System.Reflection.MethodInfo addMethodInfo, IEnumerable<Field> fields)
+            : base(dataContext, FieldType.Collection, dataType)
         {
-            ConstructorInfo = constructorInfo;
+            _Fields = new ReadOnlyList<Field>(fields);
             AddMethodInfo = addMethodInfo;
-            _Members = new Realize.ReadOnlyList<Field>(members);
+            ConstructorInfo = constructorInfo;
         }
 
         /// <summary>
-        /// 使用指定的字段类型、字段对应 .NET 框架类的构造信息以及该字段所包含的成员集合初始化一个新的 <see cref="CollectionField"/> 类实例。
+        /// 以当前字段为蓝本复制一个新的字段信息。
         /// </summary>
-        /// <param name="dataType">该字段返回值的数据类型。</param>
-        /// <param name="constructorInfo">该对象字段对应 .NET 框架类的构造函数信息。</param>
-        /// <param name="members">该字段所包含的成员集合。</param>
-        internal CollectionField(Type dataType, Core.ConstructorInfo constructorInfo, IEnumerable<Field> members)
-            : this(dataType, constructorInfo, null, members)
-        {
-        }
-
-        /// <summary>
-        /// 使用指定的字段类型以及该字段对应 .NET 框架类的构造信息初始化一个新的 <see cref="CollectionField"/> 类实例。
-        /// </summary>
-        /// <param name="dataType">该字段返回值的数据类型。</param>
-        /// <param name="constructorInfo">该对象字段对应 .NET 框架类的构造函数信息。</param>
-        internal CollectionField(Type dataType, Core.ConstructorInfo constructorInfo)
-            : this(dataType, constructorInfo, null, null)
-        {
-        }
-
-        /// <summary>
-        /// 获取该集合字段中所有成员的个数。
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _Members == null ? 0 : _Members.Count;
-            }
-        }
-
-        /// <summary>
-        /// 获取集合字段指定索引处的成员信息。
-        /// </summary>
-        /// <param name="index">待获取成员信息所在的下标。</param>
-        /// <returns>指定索引处的成员信息。</returns>
-        public Field this[int index]
-        {
-            get
-            {
-                return _Members[index];
-            }
-        }
-
-        /// <summary>
-        /// 获取该对象字段对应 .NET 框架类的构造函数信息。
-        /// </summary>
-        public Core.ConstructorInfo ConstructorInfo { get; }
-
-        /// <summary>
-        /// 获取该对象字段对应 .NET 框架类的新增成员函数信息。
-        /// </summary>
-        public MethodInfo AddMethodInfo { get; }
-
-        /// <summary>
-        /// 以当前字段为蓝本复制出一个一样的字段信息。
-        /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="isDeepCopy">是否深度复制（深度复制下 <see cref="QuoteField"/> 类型字段也将对 <see cref="QuoteField.UsingDataSource"/> 进行复制）。</param>
-        /// <param name="copiedDataSources">已经复制过的数据源集合。</param>
-        /// <param name="copiedFields">已经复制过的字段集合。</param>
-        /// <param name="startTableAliasIndex">复制字段时若有复制数据源操作时的表别名起始下标。</param>
-        /// <returns>复制好的新字段信息。</returns>
-        internal override Field Copy(IDataContext dataContext, bool isDeepCopy, Dictionary<DataSource.DataSource, DataSource.DataSource> copiedDataSources, Dictionary<Field, Field> copiedFields, ref int startTableAliasIndex)
+        /// <param name="copiedDataSources">已经复制好的数据源信息。</param>
+        /// <param name="copiedFields">已经复制好的字段信息。</param>
+        /// <param name="startDataSourceAliasIndex">若复制该字段还需复制数据源时新复制数据源的起始别名下标。</param>
+        /// <returns>复制好的新字段。</returns>
+        internal override Field Copy(Dictionary<DataSource.DataSource, DataSource.DataSource> copiedDataSources, Dictionary<Field, Field> copiedFields, ref int startDataSourceAliasIndex)
         {
             if (!copiedFields.TryGetValue(this, out Field self))
             {
-                List<Field> members = null;
+                List<Field> fields = null;
                 List<Field> parameters = null;
 
-                if (_Members != null && _Members.Count > 0)
+                if (_Fields != null && _Fields.Count > 0)
                 {
-                    members = new List<Field>();
+                    fields = new List<Field>();
 
-                    foreach (var item in _Members)
+                    foreach (var item in _Fields)
                     {
-                        if (!copiedFields.TryGetValue(item, out Field copiedField))
-                            copiedField = item.Copy(dataContext, isDeepCopy, copiedDataSources, copiedFields, ref startTableAliasIndex);
-
-                        members.Add(copiedField);
+                        fields.Add(item.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex));
                     }
                 }
 
@@ -123,16 +62,13 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!copiedFields.TryGetValue(item, out Field copiedField))
-                            copiedField = item.Copy(dataContext, isDeepCopy, copiedDataSources, copiedFields, ref startTableAliasIndex);
-
-                        parameters.Add(copiedField);
+                        parameters.Add(item.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex));
                     }
                 }
 
-                self = new CollectionField(DataType, new Core.ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, members);
+                self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, fields);
 
-                copiedFields.Add(this, self);
+                copiedFields[this] = self;
             }
 
             return self;
@@ -141,27 +77,26 @@ namespace GfdbFramework.Field
         /// <summary>
         /// 将当前字段转换成子查询字段。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="dataSource">该字段所归属的数据源。</param>
-        /// <param name="convertedFields">已转换过的字段信息集合。</param>
-        /// <returns>转换后的子查询字段。</returns>
-        internal override Field ToSubquery(IDataContext dataContext, BasicDataSource dataSource, Dictionary<Field, Field> convertedFields)
+        /// <param name="dataSource">该字段所归属的数据源信息。</param>
+        /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <returns>转换后的新字段。</returns>
+        internal override Field ToSubqueryField(BasicDataSource dataSource, Dictionary<Field, Field> convertedFields)
         {
             if (!convertedFields.TryGetValue(this, out Field self))
             {
-                List<Field> members = null;
+                List<Field> fields = null;
                 List<Field> parameters = null;
 
-                if (_Members != null && _Members.Count > 0)
+                if (_Fields != null && _Fields.Count > 0)
                 {
-                    members = new List<Field>();
+                    fields = new List<Field>();
 
-                    foreach (var item in _Members)
+                    foreach (var item in _Fields)
                     {
                         if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToSubquery(dataContext, dataSource, convertedFields);
+                            convertField = item.ToSubqueryField(dataSource, convertedFields);
 
-                        members.Add(convertField);
+                        fields.Add(convertField);
                     }
                 }
 
@@ -172,13 +107,13 @@ namespace GfdbFramework.Field
                     foreach (var item in ConstructorInfo.Parameters)
                     {
                         if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToSubquery(dataContext, dataSource, convertedFields);
+                            convertField = item.ToSubqueryField(dataSource, convertedFields);
 
                         parameters.Add(convertField);
                     }
                 }
 
-                self = new CollectionField(DataType, new Core.ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, members);
+                self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, fields);
 
                 convertedFields[this] = self;
             }
@@ -187,21 +122,297 @@ namespace GfdbFramework.Field
         }
 
         /// <summary>
-        /// 获取一个用于枚举当前集合字段中所有成员的枚举器。
+        /// 将当前字段转换成引用字段。
         /// </summary>
-        /// <returns>用于枚举当前集合字段中所有成员的枚举器。</returns>
-        IEnumerator<Field> IEnumerable<Field>.GetEnumerator()
+        /// <param name="dataSource">该字段所归属的数据源。</param>
+        /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <returns>转换后的新字段。</returns>
+        internal override Field ToQuoteField(BasicDataSource dataSource, Dictionary<Field, Field> convertedFields)
         {
-            return new Enumerator<Field>(_Members?.GetEnumerator());
+            if (!convertedFields.TryGetValue(this, out Field self))
+            {
+                List<Field> fields = null;
+                List<Field> parameters = null;
+
+                if (_Fields != null && _Fields.Count > 0)
+                {
+                    fields = new List<Field>();
+
+                    foreach (var item in _Fields)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToQuoteField(dataSource, convertedFields);
+
+                        fields.Add(convertField);
+                    }
+                }
+
+                if (ConstructorInfo.Parameters != null && ConstructorInfo.Parameters.Count > 0)
+                {
+                    parameters = new List<Field>();
+
+                    foreach (var item in ConstructorInfo.Parameters)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToQuoteField(dataSource, convertedFields);
+
+                        parameters.Add(convertField);
+                    }
+                }
+
+                self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, fields);
+
+                convertedFields[this] = self;
+            }
+
+            return self;
         }
 
         /// <summary>
-        /// 获取一个用于枚举当前集合字段中所有成员的枚举器。
+        /// 将当前字段转换成引用字段。
         /// </summary>
-        /// <returns>用于枚举当前集合字段中所有成员的枚举器。</returns>
+        /// <param name="sourceAlias">该字段所归属的数据源别名。</param>
+        /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <returns>转换后的新字段。</returns>
+        internal override Field ToQuoteField(string sourceAlias, Dictionary<Field, Field> convertedFields)
+        {
+            if (!convertedFields.TryGetValue(this, out Field self))
+            {
+                List<Field> fields = null;
+                List<Field> parameters = null;
+
+                if (_Fields != null && _Fields.Count > 0)
+                {
+                    fields = new List<Field>();
+
+                    foreach (var item in _Fields)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToQuoteField(sourceAlias, convertedFields);
+
+                        fields.Add(convertField);
+                    }
+                }
+
+                if (ConstructorInfo.Parameters != null && ConstructorInfo.Parameters.Count > 0)
+                {
+                    parameters = new List<Field>();
+
+                    foreach (var item in ConstructorInfo.Parameters)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToQuoteField(sourceAlias, convertedFields);
+
+                        parameters.Add(convertField);
+                    }
+                }
+
+                self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, fields);
+
+                convertedFields[this] = self;
+            }
+
+            return self;
+        }
+
+        /// <summary>
+        /// 将当前字段转换成查询后隔离的新别名字段。
+        /// </summary>
+        /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <returns>转换后的新字段。</returns>
+        internal override Field ToNewAliasField(Dictionary<Field, Field> convertedFields)
+        {
+            if (!convertedFields.TryGetValue(this, out Field self))
+            {
+                List<Field> fields = null;
+                List<Field> parameters = null;
+
+                if (_Fields != null && _Fields.Count > 0)
+                {
+                    fields = new List<Field>();
+
+                    foreach (var item in _Fields)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToNewAliasField(convertedFields);
+
+                        fields.Add(convertField);
+                    }
+                }
+
+                if (ConstructorInfo.Parameters != null && ConstructorInfo.Parameters.Count > 0)
+                {
+                    parameters = new List<Field>();
+
+                    foreach (var item in ConstructorInfo.Parameters)
+                    {
+                        if (!convertedFields.TryGetValue(item, out Field convertField))
+                            convertField = item.ToNewAliasField(convertedFields);
+
+                        parameters.Add(convertField);
+                    }
+                }
+
+                self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, parameters), AddMethodInfo, fields);
+
+                convertedFields[this] = self;
+            }
+
+            return self;
+        }
+
+        /// <summary>
+        /// 将当前字段与指定的字段对齐。
+        /// </summary>
+        /// <param name="field">对齐的目标字段。</param>
+        /// <param name="alignedFields">已对齐过的字段。</param>
+        /// <returns>对齐后的字段。</returns>
+        internal override Field AlignField(Field field, Dictionary<Field, Field> alignedFields)
+        {
+            if (field.Type == FieldType.Collection)
+            {
+                if (DataType == field.DataType)
+                {
+                    if (!alignedFields.TryGetValue(this, out Field self))
+                    {
+                        CollectionField collectionField = (CollectionField)field;
+
+                        if (Count != collectionField.Count || ConstructorInfo.Parameters?.Count != collectionField.ConstructorInfo.Parameters?.Count)
+                            throw new Exception($"对齐到另外一个 {Type} 类型的字段时发现目标字段的数组(集合)长度或构造参数数量不一致");
+
+                        List<Field> fields = null;
+                        List<Field> constructorParameters = null;
+
+                        if (ConstructorInfo.Parameters != null && ConstructorInfo.Parameters.Count > 0)
+                        {
+                            constructorParameters = new List<Field>();
+
+                            for (int i = 0; i < ConstructorInfo.Parameters.Count; i++)
+                            {
+                                constructorParameters.Add(ConstructorInfo.Parameters[i].AlignField(collectionField.ConstructorInfo.Parameters[i], alignedFields));
+                            }
+                        }
+
+                        if (collectionField.Count > 0)
+                        {
+                            for (int i = 0; i < collectionField.Count; i++)
+                            {
+                                fields.Add(this[i].AlignField(collectionField[i], alignedFields));
+                            }
+                        }
+
+                        self = new CollectionField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, constructorParameters), AddMethodInfo, fields);
+
+                        alignedFields[this] = self;
+                    }
+
+                    return self;
+                }
+                else
+                {
+                    throw new Exception($"对齐到另外一个 {Type} 类型的字段时发现两个字段的返回数据类型不一致");
+                }
+            }
+            else
+            {
+                throw new Exception($"未能将 {Type} 类型的字段与 {field.Type} 类型的字段对齐");
+            }
+        }
+
+        /// <summary>
+        /// 重新设置当前字段的别名。
+        /// </summary>
+        /// <param name="startAliasIndex">字段别名的起始下标。</param>
+        internal override Field ResetAlias(ref int startAliasIndex)
+        {
+            if (ConstructorInfo != null && ConstructorInfo.Parameters != null && ConstructorInfo.Parameters.Count > 0)
+            {
+                foreach (var item in ConstructorInfo.Parameters)
+                {
+                    item.ResetAlias(ref startAliasIndex);
+                }
+            }
+
+            foreach (var item in this)
+            {
+                item.ResetAlias(ref startAliasIndex);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// 获取该对象字段的调试显示结果。
+        /// </summary>
+        /// <param name="parameterContext">获取显示结果所使用的参数上下文对象。</param>
+        /// <returns>获取到的显示结果。</returns>
+        internal override string GetDebugResult(IParameterContext parameterContext)
+        {
+            StringBuilder result = new StringBuilder("[");
+
+            foreach (var item in _Fields)
+            {
+                if (result.Length > 1)
+                    result.Append(",");
+
+                result.Append(item.GetDebugResult(parameterContext));
+            }
+
+            result.Append("]");
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// 获取一个用于用于枚举所包含成员的枚举器对象。
+        /// </summary>
+        /// <returns>用于枚举所包含成员的枚举器对象。</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator<Field>(_Members?.GetEnumerator());
+            return ((IEnumerable<Field>)_Fields).GetEnumerator();
+        }
+
+        /// <summary>
+        /// 获取一个用于用于枚举所包含成员的枚举器对象。
+        /// </summary>
+        /// <returns>用于枚举所包含成员的枚举器对象。</returns>
+        IEnumerator<Field> IEnumerable<Field>.GetEnumerator()
+        {
+            return ((IEnumerable<Field>)_Fields).GetEnumerator();
+        }
+
+        /// <summary>
+        /// 获取该字段指定索引处的子字段信息。
+        /// </summary>
+        /// <param name="index">待获取子字段位置的索引值。</param>
+        /// <returns>指定索引处的字段。</returns>
+        public Field this[int index]
+        {
+            get
+            {
+                return _Fields[index];
+            }
+        }
+
+        /// <summary>
+        /// 获取该对象字段对应 .NET 框架类的构造函数信息。
+        /// </summary>
+        public ConstructorInfo ConstructorInfo { get; }
+
+        /// <summary>
+        /// 获取一个值，若当前字段为集合字段时可用于添加成员信息。
+        /// </summary>
+        internal System.Reflection.MethodInfo AddMethodInfo { get; }
+
+        /// <summary>
+        /// 获取该字段中所有成员的个数。
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return _Fields.Count;
+            }
         }
     }
 }

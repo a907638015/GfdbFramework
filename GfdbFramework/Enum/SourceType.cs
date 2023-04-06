@@ -7,39 +7,43 @@ namespace GfdbFramework.Enum
     /// <summary>
     /// 数据源类型枚举。
     /// </summary>
-    public enum DataSourceType
+    public enum SourceType
     {
         /// <summary>
-        /// 原始数据库表。
+        /// 数据库表。
         /// </summary>
         Table = 0,
         /// <summary>
-        /// 原始数据库视图。
+        /// 数据库视图。
         /// </summary>
         View = 1,
         /// <summary>
+        /// 查询结果。
+        /// </summary>
+        Select = 2,
+        /// <summary>
         /// 直连接。
         /// </summary>
-        InnerJoin = 2,
+        InnerJoin = 3,
         /// <summary>
         /// 全连接。
         /// </summary>
-        FullJoin = 3,
+        FullJoin = 4,
         /// <summary>
         /// 左连接。
         /// </summary>
-        LeftJoin = 4,
+        LeftJoin = 5,
         /// <summary>
         /// 右连接。
         /// </summary>
-        RightJoin = 5,
+        RightJoin = 6,
         /// <summary>
         /// 交叉连接。
         /// </summary>
-        CrossJoin = 6,
+        CrossJoin = 7,
         /// <summary>
-        /// 对其他数据源进行查询后的结果集。
+        /// 合并数据源。
         /// </summary>
-        QueryResult = 7
+        Union = 8
     }
 }

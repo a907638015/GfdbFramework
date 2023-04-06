@@ -1,12 +1,12 @@
-﻿using System;
+﻿using GfdbFramework.Field;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using GfdbFramework.Field;
 
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// Switch 分支字段中的某个分支信息类。
+    /// Switch 分支字段中具体的某个分支类。
     /// </summary>
     public class SwitchCase
     {
@@ -15,7 +15,7 @@ namespace GfdbFramework.Core
         /// </summary>
         /// <param name="body">该分支的返回值字段。</param>
         /// <param name="testValues">该分支的条件判定值集合。</param>
-        internal SwitchCase(BasicField body, Interface.IReadOnlyList<ConstantField> testValues)
+        internal SwitchCase(BasicField body, ReadOnlyList<ConstantField> testValues)
         {
             Body = body;
             TestValues = testValues;
@@ -29,6 +29,6 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 获取该分支的条件判定值。
         /// </summary>
-        public Interface.IReadOnlyList<ConstantField> TestValues { get; }
+        public ReadOnlyList<ConstantField> TestValues { get; }
     }
 }

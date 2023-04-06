@@ -1,10 +1,13 @@
 ﻿using GfdbFramework.Enum;
 using GfdbFramework.Field;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// 查询结果集排序项目类。
+    /// 数据源排序项目类。
     /// </summary>
     public class SortItem
     {

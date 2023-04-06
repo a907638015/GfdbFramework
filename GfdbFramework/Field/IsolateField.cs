@@ -1,5 +1,4 @@
-﻿using GfdbFramework.Core;
-using GfdbFramework.Enum;
+﻿using GfdbFramework.Enum;
 using GfdbFramework.Interface;
 using System;
 using System.Collections.Generic;
@@ -8,24 +7,20 @@ using System.Text;
 namespace GfdbFramework.Field
 {
     /// <summary>
-    /// 三元操作（条件判断）基础字段类。
+    /// 对真实数据进行隔离的字段类。
     /// </summary>
-    public class ConditionalField : BasicField
+    public class IsolateField : BasicField
     {
         /// <summary>
-        /// 使用指定的数据操作上下文、字段返回数据类型、字段的判定操作对象以及判定为真或假时的返回字段初始化一个新的 <see cref="ConditionalField"/> 类实例。
+        /// 使用指定的数据操作上下文、字段类型以及内部所需隔离的基础数据字段初始化一个新的 <see cref="IsolateField"/> 类实例。
         /// </summary>
         /// <param name="dataContext">该字段所使用的数据操作上下文。</param>
-        /// <param name="dataType">该字段返回值的数据类型。</param>
-        /// <param name="test">该字段的判定对象。</param>
-        /// <param name="ifTrue">该字段判定对象值为真时的返回值。</param>
-        /// <param name="ifFalse">该字段判定对象值为假时的返回值。</param>
-        internal ConditionalField(IDataContext dataContext, Type dataType, BasicField test, BasicField ifTrue, BasicField ifFalse)
-            : base(dataContext, FieldType.Conditional, dataType)
+        /// <param name="type">字段类型。</param>
+        /// <param name="field">该字段返回值的数据类型。</param>
+        public IsolateField(IDataContext dataContext, FieldType type, BasicField field)
+            : base(dataContext, type, field.DataType)
         {
-            Test = test;
-            IfTrue = ifTrue;
-            IfFalse = ifFalse;
+            InnerField = field;
         }
 
         /// <summary>
@@ -39,7 +34,7 @@ namespace GfdbFramework.Field
         {
             if (!copiedFields.TryGetValue(this, out Field self))
             {
-                self = new ConditionalField(DataContext, DataType, (BasicField)Test.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex), (BasicField)IfTrue.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex), (BasicField)IfFalse.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex)).ModifyAlias(Alias);
+                self = new IsolateField(DataContext, Type, (BasicField)InnerField.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex)).ModifyAlias(Alias);
 
                 copiedFields[this] = self;
             }
@@ -59,7 +54,7 @@ namespace GfdbFramework.Field
             {
                 if (!alignedFields.TryGetValue(this, out Field self))
                 {
-                    self = new ConditionalField(DataContext, DataType, Test, IfTrue, IfFalse).ModifyAlias(((BasicField)field).Alias);
+                    self = new IsolateField(DataContext, Type, InnerField).ModifyAlias(((BasicField)field).Alias);
 
                     alignedFields[this] = self;
                 }
@@ -73,18 +68,8 @@ namespace GfdbFramework.Field
         }
 
         /// <summary>
-        /// 获取当前三元字段的判定对象。
+        /// 获取当前所需隔离的字段。
         /// </summary>
-        public BasicField Test { get; }
-
-        /// <summary>
-        /// 获取当前三元字段判定对象值为真时的返回值。
-        /// </summary>
-        public BasicField IfTrue { get; }
-
-        /// <summary>
-        /// 获取当前三元字段判定对象值为假时的返回值。
-        /// </summary>
-        public BasicField IfFalse { get; }
+        public BasicField InnerField { get; }
     }
 }

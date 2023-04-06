@@ -7,7 +7,7 @@ namespace GfdbFramework.Core
     /// <summary>
     /// 通用循环计数类。
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">循环体中每个成员的数据类型。</typeparam>
     internal class Enumerator<T> : IEnumerator<T>
     {
         private IEnumerator<T> _Enumerator = null;

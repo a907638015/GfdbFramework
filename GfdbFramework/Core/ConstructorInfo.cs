@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using GfdbFramework.Interface;
-using GfdbFramework.Realize;
+using System.Text;
 
 namespace GfdbFramework.Core
 {
@@ -30,6 +28,6 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 获取构建该对象字段对应类实例时所需的构造参数集合。
         /// </summary>
-        public Interface.IReadOnlyList<Field.Field> Parameters { get; }
+        public ReadOnlyList<Field.Field> Parameters { get; }
     }
 }

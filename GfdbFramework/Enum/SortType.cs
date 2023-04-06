@@ -10,6 +10,10 @@ namespace GfdbFramework.Enum
     public enum SortType
     {
         /// <summary>
+        /// 无排序。
+        /// </summary>
+        Not = 0,
+        /// <summary>
         /// 升序。
         /// </summary>
         Ascending = 1,

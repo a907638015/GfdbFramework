@@ -1,7 +1,7 @@
-﻿using System;
+﻿using GfdbFramework.Enum;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using GfdbFramework.Enum;
 
 namespace GfdbFramework.Attribute
 {
@@ -11,10 +11,6 @@ namespace GfdbFramework.Attribute
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class FieldAttribute : System.Attribute
     {
-        private int _IncrementSpeed = 1;
-        private int _IncrementSeed = 1;
-        private Enum.SortType _SimpleIndex = 0;
-
         /// <summary>
         /// 初始化一个新的 <see cref="FieldAttribute"/> 类实例。
         /// </summary>
@@ -30,7 +26,10 @@ namespace GfdbFramework.Attribute
         public FieldAttribute(string name)
         {
             Name = name;
-            IsNullable = FieldNullableMode.Unknown;
+            IsNullable = NullableMode.Auto;
+            SimpleIndex = SortType.Not;
+            IncrementSeed = 1;
+            IncrementSpeed = 1;
         }
 
         /// <summary>
@@ -71,22 +70,12 @@ namespace GfdbFramework.Attribute
         /// <summary>
         /// 获取或设置一个值，该值指示当前成员映射的数据库表或视图字段是否允许为空。
         /// </summary>
-        public FieldNullableMode IsNullable { get; set; }
+        public NullableMode IsNullable { get; set; }
 
         /// <summary>
         /// 获取或设置该字段的索引排序方式（若该值不为 0 时表示需要为该成员加上索引）。
         /// </summary>
-        public Enum.SortType SimpleIndex
-        {
-            get
-            {
-                return _SimpleIndex;
-            }
-            set
-            {
-                _SimpleIndex = value;
-            }
-        }
+        public SortType SimpleIndex { get; set; }
 
         /// <summary>
         /// 获取或设置该字段的校验约束。
@@ -96,32 +85,12 @@ namespace GfdbFramework.Attribute
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段为自增字段时的每次递增量（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
         /// </summary>
-        public int IncrementSpeed
-        {
-            get
-            {
-                return _IncrementSpeed;
-            }
-            set
-            {
-                _IncrementSpeed = value;
-            }
-        }
+        public int IncrementSpeed { get; set; }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段为自增字段时的起始值（仅在 <see cref="IsAutoincrement"/> 属性为 true 时有效）。
         /// </summary>
-        public int IncrementSeed
-        {
-            get
-            {
-                return _IncrementSeed;
-            }
-            set
-            {
-                _IncrementSeed = value;
-            }
-        }
+        public int IncrementSeed { get; set; }
 
         /// <summary>
         /// 获取或设置一个值，该值表示映射字段的默认值。

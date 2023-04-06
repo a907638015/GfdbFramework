@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GfdbFramework.Attribute;
-using GfdbFramework.DataSource;
+﻿using GfdbFramework.Attribute;
+using GfdbFramework.Core;
+using GfdbFramework.Enum;
 using GfdbFramework.Interface;
+using System;
+using System.Collections.Generic;
 
 namespace GfdbFramework.Field
 {
     /// <summary>
-    /// 原始数据字段（数据库表或视图字段）类型。
+    /// 原始数据库表或视图字段类。
     /// </summary>
-    public sealed class OriginalField : BasicField
+    public class OriginalField : BasicField
     {
+        private string _DataSourceAlias = null;
+
         /// <summary>
-        /// 使用指定的字段数据类型、字段标记信息以及该字段所使用的别名初始化一个新的 <see cref="OriginalField"/> 类实例。
+        /// 使用指定的数据操作上下文、字段返回数据类型、字段标记信息以及该字段返回的数据类型初始化一个新的 <see cref="OriginalField"/> 类实例。
         /// </summary>
-        /// <param name="dataType">该字段的数据类型。</param>
+        /// <param name="dataContext">该字段所使用的数据操作上下文。</param>
+        /// <param name="dataType">该字段所返回的数据类型。</param>
         /// <param name="fieldAttribute">该字段的标记信息。</param>
         /// <param name="alias">该字段所使用的别名。</param>
-        internal OriginalField(Type dataType, FieldAttribute fieldAttribute, string alias)
-            : base(Enum.FieldType.Original, dataType)
+        internal OriginalField(IDataContext dataContext, Type dataType, FieldAttribute fieldAttribute, string alias)
+            : base(dataContext, Enum.FieldType.Original, dataType)
         {
             ModifyAlias(alias);
 
@@ -28,8 +31,8 @@ namespace GfdbFramework.Field
             IsAutoincrement = fieldAttribute.IsAutoincrement;
             IsInsertForDefault = fieldAttribute.IsInsertForDefault;
             IsUpdateForDefault = fieldAttribute.IsUpdateForDefault;
-            IsNullable = fieldAttribute.IsNullable == Enum.FieldNullableMode.Nullable ? true : false;
-            SimpleIndex = fieldAttribute.SimpleIndex == 0 ? null : (Enum.SortType?)fieldAttribute.SimpleIndex;
+            IsNullable = fieldAttribute.IsNullable == NullableMode.Nullable;
+            SimpleIndex = fieldAttribute.SimpleIndex;
             IncrementSpeed = fieldAttribute.IncrementSpeed;
             IncrementSeed = fieldAttribute.IncrementSeed;
             DefaultValue = fieldAttribute.DefaultValue;
@@ -40,12 +43,14 @@ namespace GfdbFramework.Field
         }
 
         /// <summary>
-        /// 使用指定的原始数据字段复制一个新的 <see cref="OriginalField"/> 类实例。
+        /// 使用指定的原始字段初始化一个新的 <see cref="OriginalField"/> 类实例。
         /// </summary>
-        /// <param name="originalField">需要复制的原始数据字段。</param>
+        /// <param name="originalField">用于参考的原始字段信息。</param>
         private OriginalField(OriginalField originalField)
-            : base(Enum.FieldType.Original, originalField.DataType)
+            : base(originalField.DataContext, Enum.FieldType.Original, originalField.DataType)
         {
+            ModifyAlias(originalField.Alias);
+
             IsPrimaryKey = originalField.IsPrimaryKey;
             IsUnique = originalField.IsUnique;
             IsAutoincrement = originalField.IsAutoincrement;
@@ -60,6 +65,74 @@ namespace GfdbFramework.Field
             SimpleIndex = originalField.SimpleIndex;
             Explain = originalField.Explain;
             CheckConstraint = originalField.CheckConstraint;
+        }
+
+        /// <summary>
+        /// 以当前字段为蓝本复制一个新的字段信息。
+        /// </summary>
+        /// <param name="copiedDataSources">已经复制好的数据源信息。</param>
+        /// <param name="copiedFields">已经复制好的字段信息。</param>
+        /// <param name="startDataSourceAliasIndex">若复制该字段还需复制数据源时新复制数据源的起始别名下标。</param>
+        /// <returns>复制好的新字段。</returns>
+        internal override Field Copy(Dictionary<DataSource.DataSource, DataSource.DataSource> copiedDataSources, Dictionary<Field, Field> copiedFields, ref int startDataSourceAliasIndex)
+        {
+            if (!copiedFields.TryGetValue(this, out Field copiedField))
+            {
+                copiedField = new OriginalField(this).ModifyDataSourceAlias(DataSourceAlias).ModifyAlias(Alias);
+
+                copiedFields[this] = copiedField;
+            }
+
+            return copiedField;
+        }
+
+        /// <summary>
+        /// 将当前字段与指定的字段对齐。
+        /// </summary>
+        /// <param name="field">对齐的目标字段。</param>
+        /// <param name="alignedFields">已对齐过的字段。</param>
+        /// <returns>对齐后的字段。</returns>
+        internal override Field AlignField(Field field, Dictionary<Field, Field> alignedFields)
+        {
+            if (DataType == field.DataType)
+            {
+                if (!alignedFields.TryGetValue(this, out Field self))
+                {
+                    self = new OriginalField(this).ModifyDataSourceAlias(DataSourceAlias).ModifyAlias(((BasicField)field).Alias);
+
+                    alignedFields[this] = self;
+                }
+
+                return self;
+            }
+            else
+            {
+                throw new Exception($"对齐到另外一个 {Type} 类型的字段时发现两个字段的返回数据类型不一致");
+            }
+        }
+
+        /// <summary>
+        /// 修改当前字段归属的数据源名称。
+        /// </summary>
+        /// <param name="dataSourceAlias">该字段归属数据源新的别名。</param>
+        /// <returns>当前字段。</returns>
+        internal virtual OriginalField ModifyDataSourceAlias(string dataSourceAlias)
+        {
+            if (dataSourceAlias != _DataSourceAlias)
+                _DataSourceAlias = dataSourceAlias;
+
+            return this;
+        }
+
+        /// <summary>
+        /// 获取当前字段所归属数据源的别名。
+        /// </summary>
+        public string DataSourceAlias
+        {
+            get
+            {
+                return _DataSourceAlias;
+            }
         }
 
         /// <summary>
@@ -93,9 +166,9 @@ namespace GfdbFramework.Field
         public bool IsNullable { get; set; }
 
         /// <summary>
-        /// 获取或设置该字段的索引排序方式（默认为 null，且简单索引的索引类型都为 <see cref="Enum.IndexType.Normal"/>）。
+        /// 获取或设置该字段的索引排序方式（默认为 <see cref="SortType.Not"/>，且简单索引的索引类型都为 <see cref="IndexType.Normal"/>）。
         /// </summary>
-        public Enum.SortType? SimpleIndex { get; set; }
+        public SortType SimpleIndex { get; set; }
 
         /// <summary>
         /// 获取或设置该字段的校验约束。
@@ -131,26 +204,5 @@ namespace GfdbFramework.Field
         /// 获取当前数据字段的描述说明文字。
         /// </summary>
         public string Explain { get; }
-
-        /// <summary>
-        /// 以当前字段为蓝本复制出一个一样的字段信息。
-        /// </summary>
-        /// <param name="dataContext">数据操作上下文对象。</param>
-        /// <param name="isDeepCopy">是否深度复制（深度复制下 <see cref="QuoteField"/> 类型字段也将对 <see cref="QuoteField.UsingDataSource"/> 进行复制）。</param>
-        /// <param name="copiedDataSources">已经复制过的数据源集合。</param>
-        /// <param name="copiedFields">已经复制过的字段集合。</param>
-        /// <param name="startTableAliasIndex">复制字段时若有复制数据源操作时的表别名起始下标。</param>
-        /// <returns>复制好的新字段信息。</returns>
-        internal override Field Copy(IDataContext dataContext, bool isDeepCopy, Dictionary<DataSource.DataSource, DataSource.DataSource> copiedDataSources, Dictionary<Field, Field> copiedFields, ref int startTableAliasIndex)
-        {
-            if (!copiedFields.TryGetValue(this, out Field self))
-            {
-                self = new OriginalField(this).ModifyAlias(Alias);
-
-                copiedFields[this] = self;
-            }
-
-            return self;
-        }
     }
 }

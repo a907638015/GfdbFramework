@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 增长模式枚举。
+    /// 数据库文件增长方式枚举。
     /// </summary>
     public enum GrowthMode
     {

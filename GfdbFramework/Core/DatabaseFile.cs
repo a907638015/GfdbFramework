@@ -1,14 +1,14 @@
-﻿using System;
+﻿using GfdbFramework.Enum;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using GfdbFramework.Enum;
 
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// 文件信息类。
+    /// 数据库文件信息类。
     /// </summary>
-    public class FileInfo
+    public class DatabaseFile
     {
         /// <summary>
         /// 获取或设置文件路径。
@@ -38,6 +38,6 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 获取或设置该文件类型。
         /// </summary>
-        public Enum.FileType Type { get; set; }
+        public FileType Type { get; set; }
     }
 }

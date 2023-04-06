@@ -5,7 +5,7 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 文件类型枚举。
+    /// 数据库文件类型枚举。
     /// </summary>
     public enum FileType
     {

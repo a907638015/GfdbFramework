@@ -1,41 +1,38 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using GfdbFramework.Core;
+﻿using GfdbFramework.Core;
 using GfdbFramework.Enum;
 using GfdbFramework.Field;
 using GfdbFramework.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GfdbFramework.DataSource
 {
     /// <summary>
-    /// 基本数据源类。
+    /// 所有基础数据源的基类。
     /// </summary>
     public abstract class BasicDataSource : DataSource
     {
-        private static readonly Type _BOOL_TYPE = typeof(bool);
+        private bool _IsDistinctly = false;
+        private Field.Field _SelectField = null;
         private Limit? _Limit = null;
         private BasicField _Where = null;
-        private Interface.IReadOnlyList<SortItem> _SortItems = null;
-        private Interface.IReadOnlyList<BasicField> _GroupFields = null;
-        private Field.Field _SelectField = null;
-        private bool _IsDistinctly = false;
+        private ReadOnlyList<SortItem> _SortItems = null;
+        private ReadOnlyList<BasicField> _GroupFields = null;
+        private string _Alias = null;
 
         /// <summary>
-        /// 使用指定的数据操作上下文、数据源类型、数据源根字段以及数据源别名下标初始化一个新的 <see cref="BasicDataSource"/> 类实例。
+        /// 使用指定的数据操作上下文、数据源类型、数据源根字段以及该数据源的别名下标初始化一个新的 <see cref="BasicDataSource"/> 类实例。
         /// </summary>
-        /// <param name="dataContext"></param>
-        /// <param name="type">该数据源的类型。</param>
-        /// <param name="rootField">该数据源的根字段信息。</param>
-        /// <param name="aliasIndex">该数据源之后的源别名下标。</param>
-        internal BasicDataSource(IDataContext dataContext, DataSourceType type, Field.Field rootField, int aliasIndex)
+        /// <param name="dataContext">该数据源所使用的数据操作上下文。</param>
+        /// <param name="type">当前数据源类型。</param>
+        /// <param name="rootField">数据源根字段。</param>
+        /// <param name="aliasIndex">数据源别名下标。</param>
+        internal BasicDataSource(IDataContext dataContext, SourceType type, Field.Field rootField, int aliasIndex)
             : base(dataContext, type)
         {
-            AliasIndex = aliasIndex;
             RootField = rootField;
-            Alias = dataContext.SqlFactory.GenerateAlias(aliasIndex, NameType.Table);
+            AliasIndex = aliasIndex;
         }
 
         /// <summary>
@@ -52,7 +49,16 @@ namespace GfdbFramework.DataSource
         /// <summary>
         /// 获取当前数据源的别名。
         /// </summary>
-        public string Alias { get; }
+        public string Alias
+        {
+            get
+            {
+                if (_Alias == null)
+                    _Alias = DataContext.SqlFactory.GenerateDataSourceAlias(AliasIndex);
+
+                return _Alias;
+            }
+        }
 
         /// <summary>
         /// 获取一个值，该值指示当前数据源所使用的别名下标。
@@ -76,7 +82,7 @@ namespace GfdbFramework.DataSource
         }
 
         /// <summary>
-        /// 获取一个结构对象，该对象指定了应当返回数据源中第几行到第几行的成员信息。
+        /// 获取一个结构对象，该对象指定了应当返回数据源中第几行到第几行的数据信息。
         /// </summary>
         public Limit? Limit
         {
@@ -87,7 +93,7 @@ namespace GfdbFramework.DataSource
         }
 
         /// <summary>
-        /// 获取一个字段，该字段指示如何对当前数据源中的成员进行条件筛选。
+        /// 获取一个字段，该字段指示如何对当前数据源中的数据进行条件筛选。
         /// </summary>
         public BasicField Where
         {
@@ -98,9 +104,9 @@ namespace GfdbFramework.DataSource
         }
 
         /// <summary>
-        /// 获取一个集合，该集合指示如何对当前数据源中的成员进行排序。
+        /// 获取一个集合，该集合指示如何对当前数据源中的数据进行排序。
         /// </summary>
-        public Interface.IReadOnlyList<SortItem> SortItems
+        public ReadOnlyList<SortItem> SortItems
         {
             get
             {
@@ -109,9 +115,9 @@ namespace GfdbFramework.DataSource
         }
 
         /// <summary>
-        /// 获取一个集合，该集合指示应当如何对当前数据源中的成员进行分组。
+        /// 获取一个集合，该集合指示应当如何对当前数据源中的数据进行分组。
         /// </summary>
-        public Interface.IReadOnlyList<BasicField> GroupFields
+        public ReadOnlyList<BasicField> GroupFields
         {
             get
             {
@@ -128,11 +134,11 @@ namespace GfdbFramework.DataSource
         {
             if (where != null)
             {
-                if (where.DataType.FullName != _BOOL_TYPE.FullName)
+                if (!where.IsBoolDataType)
                     throw new Exception("无法将非布尔类型的字段添加到条件限定字段中");
 
                 if (_Where != null)
-                    _Where = new BinaryField(_BOOL_TYPE, OperationType.AndAlso, _Where, where);
+                    _Where = new BinaryField(DataContext, typeof(bool), OperationType.AndAlso, _Where, where);
                 else
                     _Where = where;
             }
@@ -174,7 +180,7 @@ namespace GfdbFramework.DataSource
 
                 sortItemList.AddRange(sortItems);
 
-                _SortItems = new Realize.ReadOnlyList<SortItem>(sortItemList);
+                _SortItems = sortItemList;
             }
 
             return this;
@@ -188,7 +194,12 @@ namespace GfdbFramework.DataSource
         internal BasicDataSource SetSortItems(IEnumerable<SortItem> sortItems)
         {
             if (sortItems != null)
-                _SortItems = new Realize.ReadOnlyList<SortItem>(sortItems);
+            {
+                if (sortItems is ReadOnlyList<SortItem> value)
+                    _SortItems = value;
+                else
+                    _SortItems = new ReadOnlyList<SortItem>(sortItems);
+            }
 
             return this;
         }
@@ -201,7 +212,12 @@ namespace GfdbFramework.DataSource
         internal BasicDataSource SetGroupFields(IEnumerable<BasicField> groupFields)
         {
             if (groupFields != null)
-                _GroupFields = new Realize.ReadOnlyList<BasicField>(groupFields);
+            {
+                if (groupFields is ReadOnlyList<BasicField> value)
+                    _GroupFields = value;
+                else
+                    _GroupFields = new ReadOnlyList<BasicField>(groupFields);
+            }
 
             return this;
         }
@@ -234,6 +250,67 @@ namespace GfdbFramework.DataSource
         /// 以当前数据源为蓝本复制出一个一样的数据源信息（浅复制，内部所引用的信息不会复制）。
         /// </summary>
         /// <returns>复制好的新数据源信息。</returns>
-        internal abstract BasicDataSource Copy();
+        internal protected abstract BasicDataSource ShallowCopy();
+
+        /// <summary>
+        /// 将当前数据源对齐到合并数据源中的主数据源。
+        /// </summary>
+        /// <param name="mainSource">合并数据源中主数据源。</param>
+        /// <returns>对齐后的数据源。</returns>
+        internal protected abstract BasicDataSource AlignUnionSource(BasicDataSource mainSource);
+
+        /// <summary>
+        /// 复制一个字段的别名到另外一个字段。
+        /// </summary>
+        /// <param name="referenceField">参照字段。</param>
+        /// <param name="copyField">需要复制的字段。</param>
+        protected void CopyFieldAlias(Field.Field referenceField, Field.Field copyField)
+        {
+            if (referenceField.Type == FieldType.Object)
+            {
+                ObjectField referenceObjectField = (ObjectField)referenceField;
+                ObjectField copyObjectField = (ObjectField)copyField;
+
+                if (referenceObjectField.ConstructorInfo.Parameters != null && referenceObjectField.ConstructorInfo.Parameters.Count > 0)
+                {
+                    for (int i = 0; i < referenceObjectField.ConstructorInfo.Parameters.Count; i++)
+                    {
+                        CopyFieldAlias(referenceObjectField.ConstructorInfo.Parameters[i], copyObjectField.ConstructorInfo.Parameters[i]);
+                    }
+                }
+
+                if (referenceObjectField.Members != null && referenceObjectField.Members.Count > 0)
+                {
+                    foreach (var item in referenceObjectField.Members)
+                    {
+                        CopyFieldAlias(item.Value.Field, copyObjectField.Members[item.Key].Field);
+                    }
+                }
+            }
+            else if (referenceField.Type == FieldType.Collection)
+            {
+                CollectionField referenceCollectionField = (CollectionField)referenceField;
+                CollectionField copyCollectionField = (CollectionField)copyField;
+
+                if (referenceCollectionField.ConstructorInfo.Parameters != null && referenceCollectionField.ConstructorInfo.Parameters.Count > 0)
+                {
+                    for (int i = 0; i < referenceCollectionField.ConstructorInfo.Parameters.Count; i++)
+                    {
+                        CopyFieldAlias(referenceCollectionField.ConstructorInfo.Parameters[i], copyCollectionField.ConstructorInfo.Parameters[i]);
+                    }
+                }
+
+                for (int i = 0; i < referenceCollectionField.Count; i++)
+                {
+                    CopyFieldAlias(referenceCollectionField[i], copyCollectionField[i]);
+                }
+            }
+            else if (referenceField is BasicField basicField)
+            {
+                BasicField copyBasicField = (BasicField)copyField;
+
+                copyBasicField.ModifyAlias(basicField.Alias);
+            }
+        }
     }
 }

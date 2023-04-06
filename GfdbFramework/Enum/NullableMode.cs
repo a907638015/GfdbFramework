@@ -5,14 +5,14 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 字段允许为空与否的模式枚举。
+    /// 允许为空与否的枚举类。
     /// </summary>
-    public enum FieldNullableMode
+    public enum NullableMode
     {
         /// <summary>
-        /// 未知，此模式下将根据实体类的成员类型来自动判断，若类型是值类型则不允许为空，否则允许为空。
+        /// 自动，此模式下将根据实体类的成员类型来自动判断，若类型是值类型则不允许为空，否则允许为空。
         /// </summary>
-        Unknown = 0,
+        Auto = 0,
         /// <summary>
         /// 允许为空。
         /// </summary>

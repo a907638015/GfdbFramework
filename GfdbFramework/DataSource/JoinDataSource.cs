@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GfdbFramework.Enum;
+﻿using GfdbFramework.Enum;
 using GfdbFramework.Field;
 using GfdbFramework.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace GfdbFramework.DataSource
 {
     /// <summary>
-    /// 各种连接查询的数据源。
+    /// 各种连接数据源类。
     /// </summary>
     public class JoinDataSource : DataSource
     {
         /// <summary>
-        /// 使用指定的数据操作上下文、数据源类型、连接查询中的左侧数据源、连接查询中的右侧数据源以及左右数据源的关联条件初始化一个新的 <see cref="JoinDataSource"/> 类实例。
+        /// 使用指定的数据操作上下文、数据源类型、关联左侧数据源、关联右侧数据源以及关联条件字段初始化一个新的 <see cref="JoinDataSource"/> 类实例。
         /// </summary>
-        /// <param name="dataContext">数据操作上下文。</param>
-        /// <param name="type">数据源类型。</param>
-        /// <param name="left">连接查询中的左侧数据源。</param>
-        /// <param name="right">连接查询中的右侧数据源。</param>
-        /// <param name="on">左右数据源的关联条件字段信息。</param>
-        public JoinDataSource(IDataContext dataContext, DataSourceType type, DataSource left, DataSource right, BasicField on)
+        /// <param name="dataContext">该数据源所使用的数据操作上下文。</param>
+        /// <param name="type">数据源的关联类型。</param>
+        /// <param name="left">关联左侧的数据源实例。</param>
+        /// <param name="right">关联右侧的数据源实例。</param>
+        /// <param name="on">关联条件字段实例。</param>
+        public JoinDataSource(IDataContext dataContext, SourceType type, DataSource left, DataSource right, BasicField on)
             : base(dataContext, type)
         {
             Left = left;
@@ -31,22 +31,24 @@ namespace GfdbFramework.DataSource
         /// <summary>
         /// 以当前数据源为蓝本复制出一个一样的数据源信息。
         /// </summary>
-        /// <param name="startAliasIndex">复制后新数据源的起始表别名下标。</param>
+        /// <param name="copiedDataSources">已经复制过的数据源集合。</param>
+        /// <param name="copiedFields">已经复制好的字段信息。</param>
+        /// <param name="startAliasIndex">新数据源的起始别名下标。</param>
         /// <returns>复制好的新数据源信息。</returns>
-        internal override DataSource Copy(ref int startAliasIndex)
+        public override DataSource Copy(Dictionary<DataSource, DataSource> copiedDataSources, Dictionary<Field.Field, Field.Field> copiedFields, ref int startAliasIndex)
         {
-            DataSource left = Left.Copy(ref startAliasIndex);
-            DataSource right = Right.Copy(ref startAliasIndex);
-
-            Dictionary<DataSource, DataSource> copiedDataSources = new Dictionary<DataSource, DataSource>()
+            if (!copiedDataSources.TryGetValue(this, out DataSource self))
             {
-                { Left, left },
-                { Right, right }
-            };
+                DataSource left = Left.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
+                DataSource right = Right.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
+                Field.Field on = On?.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
 
-            BasicField on = (BasicField)On.Copy(DataContext, true, copiedDataSources, new Dictionary<Field.Field, Field.Field>(), ref startAliasIndex);
+                self = new JoinDataSource(DataContext, Type, left, right, (BasicField)on);
 
-            return new JoinDataSource(DataContext, Type, left, right, on);
+                copiedDataSources[this] = self;
+            }
+
+            return self;
         }
 
         /// <summary>

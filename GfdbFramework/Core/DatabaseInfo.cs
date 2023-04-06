@@ -29,7 +29,7 @@ namespace GfdbFramework.Core
         /// <summary>
         /// 获取或设置保存该数据库的文件信息。
         /// </summary>
-        public IList<FileInfo> Files { get; set; }
+        public IList<DatabaseFile> Files { get; set; }
 
         /// <summary>
         /// 获取或设置该数据库额外的配置信息。

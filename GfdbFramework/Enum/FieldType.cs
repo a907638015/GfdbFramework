@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using GfdbFramework.Core;
-using GfdbFramework.Field;
 
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 数据字段类型枚举。
+    /// 
     /// </summary>
     public enum FieldType
     {
@@ -58,6 +56,14 @@ namespace GfdbFramework.Enum
         /// <summary>
         /// Switch 分支字段。
         /// </summary>
-        Switch = 11
+        Switch = 11,
+        /// <summary>
+        /// 字段值或类型默认值字段。
+        /// </summary>
+        DefaultOrValue = 12,
+        /// <summary>
+        /// 需要对字段别名进行隔离的字段。
+        /// </summary>
+        NewAlias = 13
     }
 }

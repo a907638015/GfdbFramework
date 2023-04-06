@@ -5,10 +5,14 @@ using System.Text;
 namespace GfdbFramework.Enum
 {
     /// <summary>
-    /// 操作类型枚举。
+    /// 代码的操作类型枚举。
     /// </summary>
     public enum OperationType
     {
+        /// <summary>
+        /// 子查询操作。
+        /// </summary>
+        Subquery = 00001,
         /// <summary>
         /// 三元运算（条件运算）操作。
         /// </summary>
@@ -66,7 +70,7 @@ namespace GfdbFramework.Enum
         /// </summary>
         LeftShift = 11002,
         /// <summary>
-        /// 数学加法操作。
+        /// 数学加法操作（或字符串拼接操作）。
         /// </summary>
         Add = 12001,
         /// <summary>

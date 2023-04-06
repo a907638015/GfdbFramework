@@ -1,46 +1,47 @@
-﻿using System;
+﻿using GfdbFramework.Attribute;
+using GfdbFramework.DataSource;
+using GfdbFramework.Enum;
+using GfdbFramework.Field;
+using GfdbFramework.Interface;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using GfdbFramework.DataSource;
-using GfdbFramework.Enum;
-using GfdbFramework.Field;
-using GfdbFramework.Interface;
 
 namespace GfdbFramework.Core
 {
     /// <summary>
-    /// 对数据源提供一个可修改的操作对象。
+    /// 对数据源提供一个可修改或查询的操作对象。
     /// </summary>
     /// <typeparam name="TSource">数据源中每个成员的类型。</typeparam>
     /// <typeparam name="TSelect">对数据源进行查询返回后新数据源中每个成员的类型。</typeparam>
     public class Modifiable<TSource, TSelect> : Queryable<TSource, TSelect> where TSource : class, new()
     {
-        private static readonly Type _BoolType = typeof(bool); 
+        private static readonly Type _BoolType = typeof(bool);
 
         /// <summary>
         /// 使用指定的数据操作上下文以及数据源初始化一个新的 <see cref="Modifiable{TSource, TSelect}"/> 类实例。
         /// </summary>
         /// <param name="dataContext">该查询对象所使用的数据操作上下文。</param>
         /// <param name="dataSource">该对象所使用的数据源。</param>
-        internal Modifiable(IDataContext dataContext, BasicDataSource dataSource)
+        internal Modifiable(IDataContext dataContext, TableDataSource dataSource)
             : base(dataContext, dataSource)
         {
         }
 
         /// <summary>
-        /// 向当前可修改数据源对象中的插入一条数据（成员为默认值时默认不参与插入，除非该成员上标记的 <see cref="Attribute.FieldAttribute.IsInsertForDefault"/> 属性值为 true）。
+        /// 向当前可修改数据源对象中的插入一条数据（成员为默认值时默认不参与插入，除非该成员上标记的 <see cref="FieldAttribute.IsInsertForDefault"/> 属性值为 true）。
         /// </summary>
         /// <param name="entity">需要插入的数据实体对象（若该实体映射到的数据表有自增字段，则新增成功后会自动修改该实体的自增成员值）。</param>
         /// <returns>插入成功时返回 true，否则返回 false。</returns>
         public bool Insert(TSource entity)
         {
             List<OriginalField> fields = new List<OriginalField>();
-            List<BasicField> pars = new List<BasicField>();
+            List<BasicField> args = new List<BasicField>();
 
-            OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+            TableDataSource dataSource = (TableDataSource)DataSource;
 
             foreach (var item in ((ObjectField)dataSource.RootField).Members)
             {
@@ -58,25 +59,35 @@ namespace GfdbFramework.Core
 
                 if (originalField.IsInsertForDefault || !Helper.CheckIsDefault(value))
                 {
-                    pars.Add(new ConstantField(value == null ? originalField.DataType : value.GetType(), value));
+                    args.Add(new ConstantField(DataContext, value == null ? originalField.DataType : value.GetType(), value));
+
                     fields.Add((OriginalField)item.Value.Field);
                 }
             }
 
-            if (pars.Count < 1)
-                throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息", typeof(TSource).FullName));
+            if (args.Count < 1)
+                throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息");
 
-            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<BasicField>)pars, out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
+
+            string insertSql = DataContext.SqlFactory.GenerateInsertSql(parameterContext, dataSource, fields, args);
+
             bool result;
 
             if (dataSource.Autoincrement != null)
             {
-                result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters, out long value) == 1;
+                result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameterContext.ToList(), out long value) == 1;
 
                 object autoincrementValue = value;
 
                 switch (dataSource.Autoincrement.Field.DataType.FullName)
                 {
+                    case "System.Int16":
+                        autoincrementValue = (short)value;
+                        break;
+                    case "System.UInt16":
+                        autoincrementValue = (ushort)value;
+                        break;
                     case "System.Int32":
                         autoincrementValue = (int)value;
                         break;
@@ -85,12 +96,6 @@ namespace GfdbFramework.Core
                         break;
                     case "System.UInt64":
                         autoincrementValue = (ulong)value;
-                        break;
-                    case "System.Int16":
-                        autoincrementValue = (short)value;
-                        break;
-                    case "System.UInt16":
-                        autoincrementValue = (ushort)value;
                         break;
                     case "System.Byte":
                         autoincrementValue = (byte)value;
@@ -116,73 +121,51 @@ namespace GfdbFramework.Core
             }
             else
             {
-                result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters) == 1;
+                result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameterContext.ToList()) == 1;
             }
 
             return result;
         }
 
         /// <summary>
-        /// 向当前可修改数据源对象中的插入多条数据（若 <paramref name="entitys"/> 参数为 <see cref="Queryable{TSource, TSelect}"/> 对象则将采用 insert Table(fields...) select fields... from Table 的方式实现，同时也不会应用成员的 <see cref="Attribute.FieldAttribute.IsInsertForDefault"/> 特性）。
+        /// 向当前可修改数据源对象中的插入多条数据（若 <paramref name="entitys"/> 参数为 <see cref="Queryable{TSource, TSelect}"/> 对象则将采用 insert Table(fields...) select fields... from Table 的方式实现，同时也不会应用成员的 <see cref="FieldAttribute.IsInsertForDefault"/> 特性）。
         /// </summary>
         /// <param name="entitys">需要插入的实体对象枚举器。</param>
         /// <returns>插入成功的数据条数。</returns>
         public int Insert(IEnumerable<TSource> entitys)
         {
-            if (entitys == null)
-                throw new ArgumentNullException(nameof(entitys), string.Format("在对 {0} 类型所映射的数据表插入多条数据时参数对象不能为空", typeof(TSource).FullName));
-
             int result = 0;
 
-            if (entitys is Queryable queryable)
+            if (entitys != null)
             {
-                List<OriginalField> fields = new List<OriginalField>();
-
-                ObjectField queryField = (ObjectField)(queryable.DataSource.SelectField ?? queryable.DataSource.RootField);
-                ObjectField rootField = (ObjectField)DataSource.RootField;
-
-                bool needResetQueryField = false;
-                Dictionary<string, MemberInfo> selectFields = new Dictionary<string, MemberInfo>();
-
-                foreach (var item in queryField.Members)
+                if (entitys is Queryable queryable)
                 {
-                    OriginalField originalField = (OriginalField)rootField.Members[item.Key].Field;
+                    IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-                    if (originalField.IsAutoincrement)
+                    string insertSql = DataContext.SqlFactory.GenerateInsertSql(parameterContext, (TableDataSource)DataSource, queryable.DataSource);
+
+                    result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameterContext.ToList());
+                }
+                else
+                {
+                    DataContext.DatabaseOperation.OpenConnection(OpenedMode.Framework);
+
+                    try
                     {
-                        needResetQueryField = true;
-
-                        continue;
+                        foreach (var item in entitys)
+                        {
+                            if (Insert(item))
+                                result += 1;
+                        }
                     }
-
-                    selectFields.Add(item.Key, item.Value);
-
-                    fields.Add(originalField);
-                }
-
-                string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, (OriginalDataSource)DataSource, (Realize.ReadOnlyList<OriginalField>)fields, needResetQueryField ? queryable.DataSource.Copy().SetSelectField(new ObjectField(queryField.DataType, queryField.ConstructorInfo, selectFields)) : queryable.DataSource, out Interface.IReadOnlyList<DbParameter> parameters);
-
-                result = DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters);
-            }
-            else
-            {
-                DataContext.DatabaseOperation.OpenConnection(ConnectionOpenedMode.Framework);
-
-                try
-                {
-                    foreach (var item in entitys)
+                    catch (Exception)
                     {
-                        if (Insert(item))
-                            result += 1;
+                        throw;
                     }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    DataContext.DatabaseOperation.CloseConnection(ConnectionOpenedMode.Framework);
+                    finally
+                    {
+                        DataContext.DatabaseOperation.CloseConnection(OpenedMode.Framework);
+                    }
                 }
             }
 
@@ -200,13 +183,13 @@ namespace GfdbFramework.Core
 
             List<OriginalField> fields = new List<OriginalField>();
 
-            List<BasicField> pars = new List<BasicField>();
+            List<BasicField> args = new List<BasicField>();
 
-            OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+            TableDataSource dataSource = (TableDataSource)DataSource;
 
             ObjectField rootField = (ObjectField)dataSource.RootField;
 
-            ObjectField insertField = (ObjectField)Helper.ExtractField(entity.Body, ExtractType.Default, null, ref startTableAliasIndex);
+            ObjectField insertField = (ObjectField)Helper.ExtractField(DataContext, entity.Body, ExtractWay.Other, new ReadOnlyDictionary<string, DataSource.DataSource>(null), ref startTableAliasIndex);
 
             if (insertField.Members != null && insertField.Members.Count > 0)
             {
@@ -215,21 +198,24 @@ namespace GfdbFramework.Core
                     if (rootField.Members.TryGetValue(item.Key, out MemberInfo memberInfo))
                     {
                         fields.Add((OriginalField)memberInfo.Field);
-                        pars.Add((BasicField)item.Value.Field);
+
+                        args.Add((BasicField)item.Value.Field);
                     }
                     else
                     {
-                        throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时表达式树中至少有一个实体成员未能找到对应的数据库表字段信息", typeof(TSource).FullName));
+                        throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表插入数据时表达式树中至少有一个实体成员未能找到对应的数据库表字段信息");
                     }
                 }
             }
 
-            if (pars.Count < 1)
-                throw new Exception(string.Format("在对 {0} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息", typeof(TSource).FullName));
+            if (args.Count < 1)
+                throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表插入数据时未能从参数实体对象中提取出任何需要插入的字段值信息");
 
-            string insertSql = DataContext.SqlFactory.GenerateInsertSql(DataContext, dataSource, (Realize.ReadOnlyList<OriginalField>)fields, (Realize.ReadOnlyList<BasicField>)pars, out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameters) == 1;
+            string insertSql = DataContext.SqlFactory.GenerateInsertSql(parameterContext, dataSource, fields, args);
+
+            return DataContext.DatabaseOperation.ExecuteNonQuery(insertSql, System.Data.CommandType.Text, parameterContext.ToList()) == 1;
         }
 
         /// <summary>
@@ -238,9 +224,11 @@ namespace GfdbFramework.Core
         /// <returns>删除成功的数据条数。</returns>
         public int Delete()
         {
-            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(DataContext, new OriginalDataSource[] { (OriginalDataSource)DataSource }, DataSource, null, out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameters);
+            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(parameterContext, new TableDataSource[] { (TableDataSource)DataSource }, DataSource, null);
+
+            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameterContext.ToList());
         }
 
         /// <summary>
@@ -277,12 +265,14 @@ namespace GfdbFramework.Core
             {
                 int nextTableAliasIndex = DataSource.AliasIndex + 1;
 
-                whereField = (BasicField)Helper.ExtractField(where.Body, ExtractType.Default, new Realize.ReadOnlyDictionary<string, ParameterInfo>(new KeyValuePair<string, ParameterInfo>(where.Parameters[0].Name, new ParameterInfo(true, DataSource))), ref nextTableAliasIndex);
+                whereField = (BasicField)Helper.ExtractField(DataContext, where.Body, ExtractWay.Other, new ReadOnlyDictionary<string, DataSource.DataSource>(new Dictionary<string, DataSource.DataSource>() { { where.Parameters[0].Name, DataSource } }), ref nextTableAliasIndex);
             }
 
-            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(DataContext, new OriginalDataSource[] { (OriginalDataSource)DataSource }, DataSource, whereField, out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameters);
+            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(parameterContext, new TableDataSource[] { (TableDataSource)DataSource }, DataSource, whereField);
+
+            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameterContext.ToList());
         }
 
         /// <summary>
@@ -292,19 +282,21 @@ namespace GfdbFramework.Core
         /// <returns>删除成功返回 true，否则返回 false。</returns>
         private bool Delete(object primaryKey)
         {
-            OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+            TableDataSource dataSource = (TableDataSource)DataSource;
 
             if (dataSource.PrimaryKey == null)
-                throw new Exception(string.Format("根据主键值删除数据行时未能找到 {0} 类所映射数据表的主键字段信息", typeof(TSource).FullName));
+                throw new Exception($"根据主键值删除数据行时未能找到 {typeof(TSource).FullName} 类所映射数据表的主键字段信息");
 
             Type primaryKeyType = primaryKey == null ? dataSource.PrimaryKey.Field.DataType : primaryKey.GetType();
 
             if (primaryKeyType.IsEnum)
                 primaryKey = Convert.ToInt32((System.Enum)primaryKey);
 
-            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(DataContext, new OriginalDataSource[] { (OriginalDataSource)DataSource }, DataSource, new BinaryField(_BoolType, OperationType.Equal, (BasicField)dataSource.PrimaryKey.Field, new ConstantField(primaryKeyType, primaryKey)), out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameters) == 1;
+            string deleteSql = DataContext.SqlFactory.GenerateDeleteSql(parameterContext, new TableDataSource[] { (TableDataSource)DataSource }, DataSource, new BinaryField(DataContext, _BoolType, OperationType.Equal, (BasicField)dataSource.PrimaryKey.Field, new ConstantField(DataContext, primaryKeyType, primaryKey)));
+
+            return DataContext.DatabaseOperation.ExecuteNonQuery(deleteSql, System.Data.CommandType.Text, parameterContext.ToList()) == 1;
         }
 
         /// <summary>
@@ -318,10 +310,10 @@ namespace GfdbFramework.Core
         }
 
         /// <summary>
-        /// 根据实体中的主键成员值修改实体其他成员所映射数据库表字段的值（实体成员值为默认值或映射数据库表字段为主键、自增字段时，则该成员不参与修改操作）。
+        /// 更新当前对象映射数据源中的数据（实体成员值为默认值或映射数据库表字段为主键、自增字段时，则该成员不参与修改操作）。
         /// </summary>
         /// <param name="entity">更新后的数据字段对应实体值。</param>
-        /// <param name="updateAll">是否更新当前对象映射数据源中的所有数据行。</param>
+        /// <param name="updateAll">是否更新当前对象映射数据源中的所有数据行（若为 false 则只修改与实体映射主键值相匹配的数据行）。</param>
         /// <returns>修改成功的数据条数。</returns>
         public int Update(TSource entity, bool updateAll)
         {
@@ -329,19 +321,19 @@ namespace GfdbFramework.Core
 
             if (!updateAll)
             {
-                OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+                TableDataSource dataSource = (TableDataSource)DataSource;
 
                 object primaryKeyValue = null;
 
                 if (dataSource.PrimaryKey == null)
-                    throw new Exception(string.Format("在对 {0} 类型所映射的数据表执行数据修改操作时未能找到成员映射的主键字段信息", typeof(TSource).FullName));
+                    throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表执行数据修改操作时未能找到成员映射的主键字段信息");
 
                 if (dataSource.PrimaryKey.Member.MemberType == MemberTypes.Property)
                     primaryKeyValue = ((PropertyInfo)dataSource.PrimaryKey.Member).GetValue(entity, null);
                 else if (dataSource.PrimaryKey.Member.MemberType == MemberTypes.Field)
                     primaryKeyValue = ((FieldInfo)dataSource.PrimaryKey.Member).GetValue(entity);
 
-                whereField = new BinaryField(_BoolType, OperationType.Equal, (BasicField)dataSource.PrimaryKey.Field, new ConstantField(primaryKeyValue == null ? dataSource.PrimaryKey.Field.DataType : primaryKeyValue.GetType(), primaryKeyValue));
+                whereField = new BinaryField(DataContext, _BoolType, OperationType.Equal, (BasicField)dataSource.PrimaryKey.Field, new ConstantField(DataContext, primaryKeyValue == null ? dataSource.PrimaryKey.Field.DataType : primaryKeyValue.GetType(), primaryKeyValue));
             }
 
             return Update(entity, whereField);
@@ -361,7 +353,7 @@ namespace GfdbFramework.Core
             {
                 int nextTableAliasIndex = DataSource.AliasIndex + 1;
 
-                whereField = (BasicField)Helper.ExtractField(where.Body, ExtractType.Default, new Realize.ReadOnlyDictionary<string, ParameterInfo>(new KeyValuePair<string, ParameterInfo>(where.Parameters[0].Name, new ParameterInfo(true, DataSource))), ref nextTableAliasIndex);
+                whereField = (BasicField)Helper.ExtractField(DataContext, where.Body, ExtractWay.Other, new ReadOnlyDictionary<string, DataSource.DataSource>(new Dictionary<string, DataSource.DataSource>() { { where.Parameters[0].Name, DataSource } }), ref nextTableAliasIndex);
             }
 
             return Update(entity, whereField);
@@ -387,11 +379,11 @@ namespace GfdbFramework.Core
         {
             int nextTableAliasIndex = DataSource.AliasIndex + 1;
 
-            ObjectField updateField = (ObjectField)Helper.ExtractField(entity.Body, ExtractType.Default, new Realize.ReadOnlyDictionary<string, ParameterInfo>(new KeyValuePair<string, ParameterInfo>(entity.Parameters[0].Name, new ParameterInfo(true, DataSource))), ref nextTableAliasIndex);
+            ObjectField updateField = (ObjectField)Helper.ExtractField(DataContext, entity.Body, ExtractWay.Other, new ReadOnlyDictionary<string, DataSource.DataSource>(new Dictionary<string, DataSource.DataSource>() { { entity.Parameters[0].Name, DataSource } }), ref nextTableAliasIndex);
 
-            List<ModifyInfo> modifyFields = new List<ModifyInfo>();
+            List<UpdateItem> updateFields = new List<UpdateItem>();
 
-            OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+            TableDataSource dataSource = (TableDataSource)DataSource;
 
             ObjectField rootField = (ObjectField)dataSource.RootField;
 
@@ -399,27 +391,33 @@ namespace GfdbFramework.Core
             {
                 foreach (var item in updateField.Members)
                 {
-                    if (rootField.Members.TryGetValue(item.Key, out MemberInfo memberInfo))
-                        modifyFields.Add(new ModifyInfo((OriginalField)memberInfo.Field, dataSource, (BasicField)item.Value.Field));
+                    if (item.Value.Field is BasicField valueField)
+                    {
+                        if (rootField.Members.TryGetValue(item.Key, out MemberInfo memberInfo))
+                            updateFields.Add(new UpdateItem((OriginalField)memberInfo.Field, valueField));
+                        else
+                            throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表执行数据修改操作时成员 {item.Key} 未能找到对应的数据表字段信息");
+                    }
                     else
-                        throw new Exception(string.Format("在对 {0} 类型所映射的数据表执行数据修改操作时成员 {1} 未能找到对应的数据表字段信息", typeof(TSource).FullName, item.Key));
+                    {
+                        throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表执行数据修改操作时成员 {item.Key} 的值不是基础数据类型");
+                    }
                 }
             }
 
-            if (modifyFields.Count < 1)
-                throw new Exception(string.Format("在对 {0} 类型所映射的数据表执行数据修改操作时未能提取出任何需要修改的字段信息", typeof(TSource).FullName));
+            if (updateFields.Count < 1)
+                throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表执行数据修改操作时未能提取到任何需要修改的字段信息");
 
             BasicField whereField = null;
 
             if (where != null)
-                whereField = (BasicField)Helper.ExtractField(where.Body, ExtractType.Default, new Realize.ReadOnlyDictionary<string, ParameterInfo>(new KeyValuePair<string, ParameterInfo>(where.Parameters[0].Name, new ParameterInfo(true, DataSource))), ref nextTableAliasIndex);
+                whereField = (BasicField)Helper.ExtractField(DataContext, where.Body, ExtractWay.Other, new ReadOnlyDictionary<string, DataSource.DataSource>(new Dictionary<string, DataSource.DataSource>() { { where.Parameters[0].Name, DataSource } }), ref nextTableAliasIndex);
 
-            if (modifyFields.Count < 1)
-                throw new Exception(string.Format("在对 {0} 类型所映射的数据表执行数据修改操作时未能提取出任何需要修改的字段信息", typeof(TSource).FullName));
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            string updateSql = DataContext.SqlFactory.GenerateUpdateSql(DataContext, (Realize.ReadOnlyList<ModifyInfo>)modifyFields, dataSource, whereField, out Interface.IReadOnlyList<DbParameter> parameters);
+            string updateSql = DataContext.SqlFactory.GenerateUpdateSql(parameterContext, new List<UpdateGroup>() { new UpdateGroup(dataSource, updateFields) }, dataSource, whereField);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(updateSql, System.Data.CommandType.Text, parameters);
+            return DataContext.DatabaseOperation.ExecuteNonQuery(updateSql, System.Data.CommandType.Text, parameterContext.ToList());
         }
 
         /// <summary>
@@ -430,9 +428,9 @@ namespace GfdbFramework.Core
         /// <returns>更新成功的数据条数。</returns>
         private int Update(TSource entity, BasicField whereField)
         {
-            List<ModifyInfo> modifyFields = new List<ModifyInfo>();
+            List<UpdateItem> updateFields = new List<UpdateItem>();
 
-            OriginalDataSource dataSource = (OriginalDataSource)DataSource;
+            TableDataSource dataSource = (TableDataSource)DataSource;
 
             foreach (var item in ((ObjectField)dataSource.RootField).Members)
             {
@@ -442,22 +440,33 @@ namespace GfdbFramework.Core
                     continue;
 
                 object value = null;
+                Type valueType = null;
 
                 if (item.Value.Member.MemberType == MemberTypes.Property)
+                {
                     value = ((PropertyInfo)item.Value.Member).GetValue(entity, null);
+
+                    valueType = ((PropertyInfo)item.Value.Member).PropertyType;
+                }
                 else if (item.Value.Member.MemberType == MemberTypes.Field)
+                {
                     value = ((FieldInfo)item.Value.Member).GetValue(entity);
 
+                    valueType = ((FieldInfo)item.Value.Member).FieldType;
+                }
+
                 if (originalField.IsUpdateForDefault || !Helper.CheckIsDefault(value))
-                    modifyFields.Add(new ModifyInfo(originalField, (OriginalDataSource)DataSource, new ConstantField(value.GetType(), value)));
+                    updateFields.Add(new UpdateItem(originalField, new ConstantField(DataContext, valueType, value)));
             }
 
-            if (modifyFields.Count < 1)
-                throw new Exception(string.Format("在对 {0} 类型所映射的数据表执行数据修改操作时未能提取出任何需要修改的字段信息", typeof(TSource).FullName));
+            if (updateFields.Count < 1)
+                throw new Exception($"在对 {typeof(TSource).FullName} 类型所映射的数据表执行数据修改操作时未能从指定实体中提取出任何需要修改的字段信息");
 
-            string updateSql = DataContext.SqlFactory.GenerateUpdateSql(DataContext, (Realize.ReadOnlyList<ModifyInfo>)modifyFields, dataSource, whereField, out Interface.IReadOnlyList<DbParameter> parameters);
+            IParameterContext parameterContext = DataContext.CreateParameterContext(true);
 
-            return DataContext.DatabaseOperation.ExecuteNonQuery(updateSql, System.Data.CommandType.Text, parameters);
+            string updateSql = DataContext.SqlFactory.GenerateUpdateSql(parameterContext, new List<UpdateGroup>() { new UpdateGroup(dataSource, updateFields) }, dataSource, whereField);
+
+            return DataContext.DatabaseOperation.ExecuteNonQuery(updateSql, System.Data.CommandType.Text, parameterContext.ToList());
         }
 
         /// <summary>
@@ -470,7 +479,7 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> LeftJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(DataSourceType.LeftJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.LeftJoin, right, on, null);
         }
 
         /// <summary>
@@ -483,7 +492,7 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> RightJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(DataSourceType.RightJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.RightJoin, right, on, null);
         }
 
         /// <summary>
@@ -496,7 +505,7 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> InnerJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(DataSourceType.InnerJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.InnerJoin, right, on, null);
         }
 
         /// <summary>
@@ -509,7 +518,7 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> FullJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(DataSourceType.FullJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.FullJoin, right, on, null);
         }
 
         /// <summary>
@@ -521,7 +530,7 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> CrossJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(DataSourceType.CrossJoin, right, null, null);
+            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.CrossJoin, right, null, null);
         }
 
         /// <summary>
@@ -534,21 +543,11 @@ namespace GfdbFramework.Core
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <param name="existentParameters">调用该方法时已经传入的参数集合。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        internal override MultipleJoin Join<TJoinSource, TJoinSelect>(DataSourceType joinType, Queryable<TJoinSource, TJoinSelect> right, LambdaExpression on, Interface.IReadOnlyDictionary<string, ParameterInfo> existentParameters)
+        internal override MultipleJoin Join<TJoinSource, TJoinSelect>(SourceType joinType, Queryable<TJoinSource, TJoinSelect> right, LambdaExpression on, ReadOnlyDictionary<string, DataSource.DataSource> existentParameters)
         {
             MultipleJoin<TSource, TSelect, TJoinSource, TJoinSelect> multipleJoin = (MultipleJoin<TSource, TSelect, TJoinSource, TJoinSelect>)base.Join(joinType, right, on, existentParameters);
 
-            return new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>(multipleJoin.DataContext, (BasicDataSource)multipleJoin.Left, multipleJoin.Right, multipleJoin.On, multipleJoin.JoinType);
-        }
-
-        /// <summary>
-        /// 以当前对象为蓝本复制出一个新的可查询对象。
-        /// </summary>
-        /// <param name="startAliasIndex">复制后新数据源的起始表别名下标。</param>
-        /// <returns>复制后新的可查询操作对象。</returns>
-        internal override Queryable Copy(ref int startAliasIndex)
-        {
-            return new Modifiable<TSource, TSelect>(DataContext, (BasicDataSource)DataSource.Copy(ref startAliasIndex));
+            return new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>(multipleJoin.DataContext, multipleJoin.Left, multipleJoin.Right, multipleJoin.On, multipleJoin.JoinType);
         }
     }
 }
