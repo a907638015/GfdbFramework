@@ -6,7 +6,7 @@
 
 在正式使用该框架之前，首先你得准备好实体类以及数据操作上下文类，可参考[Entities](GfdbFramework.Test/Entities)以及[DataContext.cs](GfdbFramework.Test/DataContext.cs)实现
 
-查看 [更新日志](../../wiki/升级日志) 或 [常见问题](../../wiki/常见问题)
+查看 [更新日志](../../wiki/更新日志) 或 [常见问题](../../wiki/常见问题)
 
 ## 对比 Linq To Sql
 | 功能点 | Linq To Sql | GfdbFramework | 描述 |
