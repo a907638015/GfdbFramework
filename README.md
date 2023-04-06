@@ -157,7 +157,7 @@ dataContext.Commodities.InnerJoin(dataContext.Users, (left, right) => left.Creat
 ```c#
 DataContext dataContext = new DataContext();
 
-var data2 = dataContext.Commodities
+var data = dataContext.Commodities
     .InnerJoin(dataContext.Classifies, (left, right) => left.ClassifyID == right.ID)
     .InnerJoin(dataContext.Units, (left, right) => left.Left.PackageUnitID == right.ID)
     .InnerJoin(dataContext.Units, (left, right) => left.Left.Left.MiddleUnitID == right.ID)
@@ -173,8 +173,30 @@ var data2 = dataContext.Commodities
         Brand = source.Right.Name
     });
 
-foreach (var item in data2)
+foreach (var item in data)
 {
     Console.WriteLine($"商品名称：{item.Name}，分类：{item.Classify}，最大包装单位：{item.PackageUnit}，中包包装单位：{item.MiddleUnit}，零售包装单位：{ item.MinimumUnit}，品牌：{ item.Brand}");
+}
+```
+```
+16. 数据合并 union all（查询 ID 大于 1 的用户名以及 ID 大于 1 的商品名）
+```c#
+DataContext dataContext = new DataContext();
+
+var data = dataContext.Users.Select(item => new
+{
+    item.ID,
+    item.Name,
+    Type = "User"
+}).Where(item => item.ID > 1).UnionAll(dataContext.Commodities.Select(item => new
+{
+    item.ID,
+    item.Name,
+    Type = "Commodity"
+}).Where(item => item.ID > 1));
+
+foreach (var item in data)
+{
+    Console.WriteLine($"类型：{(item.Type == "User" ? "用户：" : "商品：")}{item.Name} ID:{item.ID}");
 }
 ```
