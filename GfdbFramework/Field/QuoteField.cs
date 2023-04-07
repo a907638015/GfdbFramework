@@ -90,24 +90,22 @@ namespace GfdbFramework.Field
         /// <returns>对齐后的字段。</returns>
         internal override Field AlignField(Field field, Dictionary<Field, Field> alignedFields)
         {
-            if (DataType == field.DataType)
+            var result = base.AlignField(field, alignedFields);
+
+            if (result == null)
             {
-                if (!alignedFields.TryGetValue(this, out Field self))
+                if (!alignedFields.TryGetValue(this, out result))
                 {
                     if (_QuoteDataSource == null)
-                        self = new QuoteField(DataContext, DataType, QuoteFieldName, null, QuoteDataSourceAlias).ModifyAlias(((BasicField)field).Alias);
+                        result = new QuoteField(DataContext, DataType, QuoteFieldName, null, QuoteDataSourceAlias).ModifyAlias(((BasicField)field).Alias);
                     else
-                        self = new QuoteField(DataContext, DataType, QuoteFieldName, _QuoteDataSource, null).ModifyAlias(((BasicField)field).Alias);
+                        result = new QuoteField(DataContext, DataType, QuoteFieldName, _QuoteDataSource, null).ModifyAlias(((BasicField)field).Alias);
 
-                    alignedFields[this] = self;
+                    alignedFields[this] = result;
                 }
+            }
 
-                return self;
-            }
-            else
-            {
-                throw new Exception($"对齐到另外一个 {Type} 类型的字段时发现两个字段的返回数据类型不一致");
-            }
+            return result;
         }
 
         /// <summary>

@@ -93,10 +93,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in _Fields)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToSubqueryField(dataSource, convertedFields);
-
-                        fields.Add(convertField);
+                        fields.Add(item.ToSubqueryField(dataSource, convertedFields));
                     }
                 }
 
@@ -106,10 +103,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToSubqueryField(dataSource, convertedFields);
-
-                        parameters.Add(convertField);
+                        parameters.Add(item.ToSubqueryField(dataSource, convertedFields));
                     }
                 }
 
@@ -140,10 +134,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in _Fields)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToQuoteField(dataSource, convertedFields);
-
-                        fields.Add(convertField);
+                        fields.Add(item.ToQuoteField(dataSource, convertedFields));
                     }
                 }
 
@@ -153,10 +144,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToQuoteField(dataSource, convertedFields);
-
-                        parameters.Add(convertField);
+                        parameters.Add(item.ToQuoteField(dataSource, convertedFields));
                     }
                 }
 
@@ -187,10 +175,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in _Fields)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToQuoteField(sourceAlias, convertedFields);
-
-                        fields.Add(convertField);
+                        fields.Add(item.ToQuoteField(sourceAlias, convertedFields));
                     }
                 }
 
@@ -200,10 +185,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToQuoteField(sourceAlias, convertedFields);
-
-                        parameters.Add(convertField);
+                        parameters.Add(item.ToQuoteField(sourceAlias, convertedFields));
                     }
                 }
 
@@ -233,10 +215,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in _Fields)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToNewAliasField(convertedFields);
-
-                        fields.Add(convertField);
+                        fields.Add(item.ToNewAliasField(convertedFields));
                     }
                 }
 
@@ -246,10 +225,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertField))
-                            convertField = item.ToNewAliasField(convertedFields);
-
-                        parameters.Add(convertField);
+                        parameters.Add(item.ToNewAliasField(convertedFields));
                     }
                 }
 

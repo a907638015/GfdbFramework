@@ -50,19 +50,13 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!copiedFields.TryGetValue(item, out Field copiedField))
-                            copiedField = item.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex);
-
-                        constructorParameters.Add(copiedField);
+                        constructorParameters.Add(item.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex));
                     }
                 }
 
                 foreach (var item in Members)
                 {
-                    if (!copiedFields.TryGetValue(item.Value.Field, out Field copiedField))
-                        copiedField = item.Value.Field.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex);
-
-                    members.Add(item.Key, new MemberInfo(item.Value.Member, copiedField));
+                    members.Add(item.Key, new MemberInfo(item.Value.Member, item.Value.Field.Copy(copiedDataSources, copiedFields, ref startDataSourceAliasIndex)));
                 }
 
                 self = new ObjectField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, constructorParameters), members, WhetherNecessaryInit);
@@ -92,19 +86,13 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertedField))
-                            convertedField = item.ToSubqueryField(dataSource, convertedFields);
-
-                        constructorParameters.Add(convertedField);
+                        constructorParameters.Add(item.ToSubqueryField(dataSource, convertedFields));
                     }
                 }
 
                 foreach (var item in Members)
                 {
-                    if (!convertedFields.TryGetValue(item.Value.Field, out Field convertedField))
-                        convertedField = item.Value.Field.ToSubqueryField(dataSource, convertedFields);
-
-                    members.Add(item.Key, new MemberInfo(item.Value.Member, convertedField));
+                    members.Add(item.Key, new MemberInfo(item.Value.Member, item.Value.Field.ToSubqueryField(dataSource, convertedFields)));
                 }
 
                 self = new ObjectField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, constructorParameters), members, WhetherNecessaryInit);
@@ -134,19 +122,13 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertedField))
-                            convertedField = item.ToQuoteField(dataSource, convertedFields);
-
-                        constructorParameters.Add(convertedField);
+                        constructorParameters.Add(item.ToQuoteField(dataSource, convertedFields));
                     }
                 }
 
                 foreach (var item in Members)
                 {
-                    if (!convertedFields.TryGetValue(item.Value.Field, out Field convertedField))
-                        convertedField = item.Value.Field.ToQuoteField(dataSource, convertedFields);
-
-                    members.Add(item.Key, new MemberInfo(item.Value.Member, convertedField));
+                    members.Add(item.Key, new MemberInfo(item.Value.Member, item.Value.Field.ToQuoteField(dataSource, convertedFields)));
                 }
 
                 self = new ObjectField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, constructorParameters), members, WhetherNecessaryInit);
@@ -211,19 +193,13 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        if (!convertedFields.TryGetValue(item, out Field convertedField))
-                            convertedField = item.ToNewAliasField(convertedFields);
-
-                        constructorParameters.Add(convertedField);
+                        constructorParameters.Add(item.ToNewAliasField(convertedFields));
                     }
                 }
 
                 foreach (var item in Members)
                 {
-                    if (!convertedFields.TryGetValue(item.Value.Field, out Field convertedField))
-                        convertedField = item.Value.Field.ToNewAliasField(convertedFields);
-
-                    members.Add(item.Key, new MemberInfo(item.Value.Member, convertedField));
+                    members.Add(item.Key, new MemberInfo(item.Value.Member, item.Value.Field.ToNewAliasField(convertedFields)));
                 }
 
                 self = new ObjectField(DataContext, DataType, new ConstructorInfo(ConstructorInfo.Constructor, constructorParameters), members, WhetherNecessaryInit);

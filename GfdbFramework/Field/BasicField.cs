@@ -131,6 +131,27 @@ namespace GfdbFramework.Field
         }
 
         /// <summary>
+        /// 将当前字段与指定的字段对齐。
+        /// </summary>
+        /// <param name="field">对齐的目标字段。</param>
+        /// <param name="alignedFields">已对齐过的字段。</param>
+        /// <returns>对齐后的字段。</returns>
+        internal override Field AlignField(Field field, Dictionary<Field, Field> alignedFields)
+        {
+            if (DataType == field.DataType)
+            {
+                if (Alias == ((BasicField)field).Alias)
+                    return this;
+                else
+                    return null;
+            }
+            else
+            {
+                throw new Exception($"对齐到另外一个 {Type} 类型的字段时发现两个字段的返回数据类型不一致");
+            }
+        }
+
+        /// <summary>
         /// 获取该对象字段的调试显示结果。
         /// </summary>
         /// <param name="parameterContext">获取显示结果所使用的参数上下文对象。</param>
