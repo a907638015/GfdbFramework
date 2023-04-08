@@ -2,7 +2,7 @@
 
 [![NuGet version (GfdbFramework)](https://img.shields.io/nuget/v/GfdbFramework.svg?style=flat-square)](https://www.nuget.org/packages/GfdbFramework/)
 
-**这是一个可以让你用拉姆达表达式执行各种数据库操作的框架，除非你手动实现接口，否则你无需引用该框架，只需要引用 GfdbFramework.SqlServer、GfdbFramework.MySql（正在修改BUG）、GfdbFramework.Sqlite 任意一个即可，示例程序以 GfdbFramework.SqlServer 为准，你可以直接下载示例程序运行查看效果（需要修改 GfdbFramework.Test/DataContext.cs 类中连接字符串的账号密码，数据库会自动创建）**
+**这是一个可以让你用拉姆达表达式执行各种数据库操作的框架，除非你手动实现接口，否则你无需引用该框架，只需要引用 GfdbFramework.SqlServer、GfdbFramework.MySql、GfdbFramework.Sqlite 任意一个即可，示例程序以 GfdbFramework.SqlServer 为准，你可以直接下载示例程序运行查看效果（需要修改 GfdbFramework.Test/DataContext.cs 类中连接字符串的账号密码，数据库会自动创建）**
 
 在正式使用该框架之前，首先你得准备好实体类以及数据操作上下文类，可参考[Entities](GfdbFramework.Test/Entities)以及[DataContext.cs](GfdbFramework.Test/DataContext.cs)实现
 
