@@ -151,7 +151,7 @@ namespace GfdbFramework.Core
                     if (body.NodeType == ExpressionType.ArrayIndex)
                     {
                         if (right.Type != FieldType.Constant || !(((ConstantField)right).Value is int || ((ConstantField)right).Value is long))
-                            throw new Exception("对于从数组集合中引用某个字段时，所使用的索引值必须是运行时常量，而不能是 Sql 中的字段信息");
+                            throw new Exception("对于从数组或集合中引用某个字段时，所使用的索引值必须是运行时常量，而不能是 Sql 中的字段信息");
 
                         int index = int.Parse(((ConstantField)right).Value.ToString());
 
@@ -638,11 +638,25 @@ namespace GfdbFramework.Core
                         //若调用方法实例是非常量字段或调用参数包含非常量字段（实例方法）
                         else if (isExistFieldParameter || methodExampleField.Type != FieldType.Constant)
                         {
+                            //如果是集合字段的索引方法
+                            if (methodExampleField.Type == FieldType.Collection && methodCallExpression.Method.Name == "get_Item" && methodParameters != null && methodParameters.Length == 1 && methodParameters[0].DataType == _Int32Type)
+                            {
+                                BasicField indexField = (BasicField)methodParameters[0];
+
+                                if (methodParameters[0].Type != FieldType.Constant || !(((ConstantField)methodParameters[0]).Value is int index))
+                                    throw new Exception("对于集合中引用某个字段时，所使用的索引值必须是运行时常量，而不能是 Sql 中的字段信息");
+
+                                resultField = ((CollectionField)methodExampleField)[index];
+                            }
                             //若调用方法为 ICollection<?>.Contains 方法
-                            if (methodCallExpression.Method.Name == _ICollectionContainsMethodName && methodExampleField.Type == FieldType.Constant && methodCallExpression.Method.DeclaringType.CheckIsCollection() && methodParameters != null && methodParameters.Length == 1 && methodParameters[0] is BasicField basicParameter && methodParameters[0].DataType.CheckIsBasicType())
+                            else if (methodCallExpression.Method.Name == _ICollectionContainsMethodName && methodExampleField.Type == FieldType.Constant && methodCallExpression.Method.DeclaringType.CheckIsCollection() && methodParameters != null && methodParameters.Length == 1 && methodParameters[0] is BasicField basicParameter && methodParameters[0].DataType.CheckIsBasicType())
+                            {
                                 resultField = new BinaryField(dataContext, body.Type, OperationType.In, basicParameter, (ConstantField)methodExampleField);
+                            }
                             else
+                            {
                                 resultField = new MethodField(dataContext, methodExampleField, methodParameters, methodCallExpression.Method);
+                            }
                         }
                         //打上 DBFunAttribute 标记的方法直接返回 MethodField 字段（实例方法）
                         else if (methodCallExpression.Method.GetCustomAttribute<DBFunAttribute>(true) != null)
@@ -1510,7 +1524,26 @@ namespace GfdbFramework.Core
         /// <returns>若该类型实现了 <see cref="IList{T}"/> 泛型接口则返回 true，否则返回 false。</returns>
         internal static bool CheckIsList(this Type type)
         {
-            return _IListType.IsAssignableFrom(type);
+            if (type.IsGenericType)
+            {
+                var arguments = type.GetGenericArguments();
+
+                if (arguments.Length == 1 && _IListType.MakeGenericType(arguments).IsAssignableFrom(type))
+                    return true;
+            }
+
+            var interfaces = type.GetInterfaces();
+
+            if (interfaces != null && interfaces.Length > 0)
+            {
+                foreach (var item in interfaces)
+                {
+                    if (item.IsGenericType && item.GetGenericTypeDefinition() == _IListType)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -1520,7 +1553,26 @@ namespace GfdbFramework.Core
         /// <returns>若该类型实现了 <see cref="ICollection{T}"/> 泛型接口则返回 true，否则返回 false。</returns>
         internal static bool CheckIsCollection(this Type type)
         {
-            return _ICollectionType.IsAssignableFrom(type);
+            if (type.IsGenericType)
+            {
+                var arguments = type.GetGenericArguments();
+
+                if (arguments.Length == 1 && _ICollectionType.MakeGenericType(arguments).IsAssignableFrom(type))
+                    return true;
+            }
+
+            var interfaces = type.GetInterfaces();
+
+            if (interfaces != null && interfaces.Length > 0)
+            {
+                foreach (var item in interfaces)
+                {
+                    if (item.IsGenericType && item.GetGenericTypeDefinition() == _ICollectionType)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

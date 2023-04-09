@@ -15,6 +15,8 @@ namespace GfdbFramework.Core
     {
         private static readonly Type _NullableType = typeof(int?).GetGenericTypeDefinition();
         private readonly IDatabaseOperation _DatabaseOperation = null;
+        private static readonly Dictionary<Type, TableDataSource> _TableSources = new Dictionary<Type, TableDataSource>();
+        private static readonly Dictionary<Type, ViewDataSource> _ViewSources = new Dictionary<Type, ViewDataSource>();
 
         /// <summary>
         /// 使用指定的数据库操作执行对象以及一个创建各种 Sql 的工厂实例初始化一个新的 <see cref="DataContext"/> 类实例。
@@ -116,7 +118,16 @@ namespace GfdbFramework.Core
         /// <returns>指定实体类型所映射的数据库表操作对象。</returns>
         public Modifiable<TEntity, TEntity> GetTable<TEntity>() where TEntity : class, new()
         {
-            return new Modifiable<TEntity, TEntity>(this, (TableDataSource)Helper.GetDataSource(this, typeof(TEntity), true));
+            Type entityType = typeof(TEntity);
+
+            if (!_TableSources.TryGetValue(entityType, out TableDataSource dataSource))
+            {
+                dataSource = (TableDataSource)Helper.GetDataSource(this, entityType, true);
+
+                _TableSources[entityType] = dataSource;
+            }
+
+            return new Modifiable<TEntity, TEntity>(this, dataSource);
         }
 
         /// <summary>
@@ -126,7 +137,16 @@ namespace GfdbFramework.Core
         /// <returns>指定实体类型所映射的数据库视图操作对象。</returns>
         public Queryable<TEntity, TEntity> GetView<TEntity>() where TEntity : class, new()
         {
-            return new Queryable<TEntity, TEntity>(this, (ViewDataSource)Helper.GetDataSource(this, typeof(TEntity), false));
+            Type entityType = typeof(TEntity);
+
+            if (!_ViewSources.TryGetValue(entityType, out ViewDataSource dataSource))
+            {
+                dataSource = (ViewDataSource)Helper.GetDataSource(this, entityType, true);
+
+                _ViewSources[entityType] = dataSource;
+            }
+
+            return new Queryable<TEntity, TEntity>(this, dataSource);
         }
 
         /// <summary>
