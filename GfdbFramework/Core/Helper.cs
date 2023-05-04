@@ -974,7 +974,7 @@ namespace GfdbFramework.Core
                             }
                         }
                         //如果是 Nullable 类型的 Value 属性，则直接返回该字段值
-                        else if (memberExpression.Member.MemberType == MemberTypes.Property && memberExpression.Member.Name == _NullableValuePropName && memberExpression.Member.ReflectedType.IsGenericType && memberExpression.Member.ReflectedType.GetGenericTypeDefinition() == _NullableType)
+                        else if (exampleField.Type != FieldType.Constant && memberExpression.Member.MemberType == MemberTypes.Property && memberExpression.Member.Name == _NullableValuePropName && memberExpression.Member.ReflectedType.IsGenericType && memberExpression.Member.ReflectedType.GetGenericTypeDefinition() == _NullableType)
                         {
                             resultField = exampleField;
                         }
