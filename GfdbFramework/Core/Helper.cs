@@ -250,7 +250,7 @@ namespace GfdbFramework.Core
                         {
                             var parameter = ExtractField(dataContext, methodCallExpression.Arguments[i], extractWay, parameters, convertedFields, ref startDataSourceAliasIndex);
 
-                            if (parameter.Type != FieldType.Constant)
+                            if (parameter.Type != FieldType.Constant && (parameter.Type != FieldType.Unary || ((OperationField)parameter).OperationType != OperationType.Convert || ((UnaryField)parameter).Operand.Type != FieldType.Constant))
                                 isExistFieldParameter = true;
 
                             methodParameters[i] = parameter;
