@@ -116,7 +116,7 @@ foreach (var item in data)
 ```c#
 DataContext dataContext = new DataContext();
 
-var data = dataContext.Commodities.InnerJoin(dataContext.Users, (commodity, user) => new
+var data = dataContext.Commodities.LeftJoin(dataContext.Users, (commodity, user) => new
 {
     UserID = user.ID.ToNull(),
     CommodityName = commodity.Name
