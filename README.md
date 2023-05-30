@@ -55,7 +55,7 @@ Console.WriteLine($"新增用户 ID 为：{user.ID}");
 ```c#
 DataContext dataContext = new DataContext();
 
-var users = dataContext.Users.Where(user => dataContext.Commodities.Select(commodity => commodity.ID).Where(commodity => commodity.Name == "波力海苔" || commodity.Name == "人参果").Contains(user.ID));
+var users = dataContext.Users.Where(user => dataContext.Commodities.Select(commodity => commodity.CreateUID).Where(commodity => commodity.Name == "波力海苔" || commodity.Name == "人参果").Contains(user.ID));
 
 foreach (var item in users)
 {
