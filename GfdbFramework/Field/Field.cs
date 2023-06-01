@@ -71,8 +71,9 @@ namespace GfdbFramework.Field
         /// </summary>
         /// <param name="sourceAlias">该字段所归属的数据源别名。</param>
         /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <param name="needCopyAalias">转成引用字段后是否需要复制别名。</param>
         /// <returns>转换后的新字段。</returns>
-        internal abstract Field ToQuoteField(string sourceAlias, Dictionary<Field, Field> convertedFields);
+        internal abstract Field ToQuoteField(string sourceAlias, Dictionary<Field, Field> convertedFields, bool needCopyAalias = false);
 
         /// <summary>
         /// 将当前字段与指定的字段对齐。

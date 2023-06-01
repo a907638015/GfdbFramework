@@ -161,8 +161,9 @@ namespace GfdbFramework.Field
         /// </summary>
         /// <param name="sourceAlias">该字段所归属的数据源别名。</param>
         /// <param name="convertedFields">已转换的字段信息。</param>
+        /// <param name="needCopyAalias">转成引用字段后是否需要复制别名。</param>
         /// <returns>转换后的新字段。</returns>
-        internal override Field ToQuoteField(string sourceAlias, Dictionary<Field, Field> convertedFields)
+        internal override Field ToQuoteField(string sourceAlias, Dictionary<Field, Field> convertedFields, bool needCopyAalias = false)
         {
             if (!convertedFields.TryGetValue(this, out Field self))
             {
@@ -175,7 +176,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in _Fields)
                     {
-                        fields.Add(item.ToQuoteField(sourceAlias, convertedFields));
+                        fields.Add(item.ToQuoteField(sourceAlias, convertedFields, needCopyAalias));
                     }
                 }
 
@@ -185,7 +186,7 @@ namespace GfdbFramework.Field
 
                     foreach (var item in ConstructorInfo.Parameters)
                     {
-                        parameters.Add(item.ToQuoteField(sourceAlias, convertedFields));
+                        parameters.Add(item.ToQuoteField(sourceAlias, convertedFields, needCopyAalias));
                     }
                 }
 

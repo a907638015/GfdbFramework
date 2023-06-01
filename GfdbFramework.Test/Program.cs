@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using GfdbFramework.Attribute;
 using GfdbFramework.Core;
@@ -24,7 +25,24 @@ namespace GfdbFramework.Test
                 Console.WriteLine($"{Environment.NewLine}----- 初始化数据库 ----{Environment.NewLine}");
 
                 //创建数据库（在测试时若代码位置在 C 盘，建议给当前程序目录添加 Everyone 的全部访问权限，不然极有可能报 拒绝访问 错误信息，其他盘无此问题）
-                dataContext.CreateDatabase(new DatabaseInfo("TestDB2"));
+                dataContext.CreateDatabase(new DatabaseInfo("TestDB2")
+                {
+                    Files = new DatabaseFile[]
+                    {
+                        new DatabaseFile()
+                        {
+                            Path = Path.Combine(Environment.CurrentDirectory, "Databases\\TestDB2.mdb"),
+                            Type = Enum.FileType.Data,
+                            Size = 1024 * 5
+                        },
+                        new DatabaseFile()
+                        {
+                            Path = Path.Combine(Environment.CurrentDirectory, "Databases\\TestDB2_log.ldf"),
+                            Type = Enum.FileType.Index,
+                            Size = 1024 * 2
+                        }
+                    }
+                });
 
                 //创建各种表
                 dataContext.CreateTable(dataContext.Users);

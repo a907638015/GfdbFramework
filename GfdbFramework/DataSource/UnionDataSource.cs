@@ -19,7 +19,7 @@ namespace GfdbFramework.DataSource
         /// <param name="unionType">合并类型。</param>
         /// <param name="aliasIndex">数据源别名下标。</param>
         internal UnionDataSource(IDataContext dataContext, BasicDataSource main, BasicDataSource affiliation,Enum.UnionType unionType, int aliasIndex)
-            : base(dataContext, Enum.SourceType.Union, (main.SelectField ?? main.RootField).ToQuoteField(dataContext.SqlFactory.GenerateDataSourceAlias(aliasIndex), new Dictionary<Field.Field, Field.Field>()), aliasIndex)
+            : base(dataContext, Enum.SourceType.Union, (main.SelectField ?? main.RootField).ToQuoteField(dataContext.SqlFactory.GenerateDataSourceAlias(aliasIndex), new Dictionary<Field.Field, Field.Field>(), true), aliasIndex)
         {
             Main = main;
             Affiliation = affiliation;
