@@ -477,9 +477,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> LeftJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
+        public new ModifiableMultipleJoin<TSource, TSelect, TJoinSelect> LeftJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSelect, TJoinSelect, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.LeftJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>)Join(SourceType.LeftJoin, right, on, null);
         }
 
         /// <summary>
@@ -490,9 +490,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> RightJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
+        public new ModifiableMultipleJoin<TSource, TSelect, TJoinSelect> RightJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSelect, TJoinSelect, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.RightJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>)Join(SourceType.RightJoin, right, on, null);
         }
 
         /// <summary>
@@ -503,9 +503,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> InnerJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
+        public new ModifiableMultipleJoin<TSource,TSelect, TJoinSelect> InnerJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSelect, TJoinSelect, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.InnerJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>)Join(SourceType.InnerJoin, right, on, null);
         }
 
         /// <summary>
@@ -516,9 +516,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> FullJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSource, TJoinSource, bool>> on)
+        public new ModifiableMultipleJoin<TSource, TSelect, TJoinSelect> FullJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right, Expression<Func<TSelect, TJoinSelect, bool>> on)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.FullJoin, right, on, null);
+            return (ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>)Join(SourceType.FullJoin, right, on, null);
         }
 
         /// <summary>
@@ -528,9 +528,9 @@ namespace GfdbFramework.Core
         /// <typeparam name="TJoinSelect">右数据源中的每个成员类型。</typeparam>
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <returns>关联后的多表操作对象。</returns>
-        public new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect> CrossJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right)
+        public new ModifiableMultipleJoin<TSource, TSelect, TJoinSelect> CrossJoin<TJoinSource, TJoinSelect>(Queryable<TJoinSource, TJoinSelect> right)
         {
-            return (ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>)Join(SourceType.CrossJoin, right, null, null);
+            return (ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>)Join(SourceType.CrossJoin, right, null, null);
         }
 
         /// <summary>
@@ -545,9 +545,9 @@ namespace GfdbFramework.Core
         /// <returns>关联后的多表操作对象。</returns>
         internal override MultipleJoin Join<TJoinSource, TJoinSelect>(SourceType joinType, Queryable<TJoinSource, TJoinSelect> right, LambdaExpression on, ReadOnlyDictionary<string, DataSource.DataSource> existentParameters)
         {
-            MultipleJoin<TSource, TSelect, TJoinSource, TJoinSelect> multipleJoin = (MultipleJoin<TSource, TSelect, TJoinSource, TJoinSelect>)base.Join(joinType, right, on, existentParameters);
+            MultipleJoin<TSelect, TJoinSelect> multipleJoin = (MultipleJoin<TSelect, TJoinSelect>)base.Join(joinType, right, on, existentParameters);
 
-            return new ModifiableMultipleJoin<TSource, TSource, TSelect, TJoinSource, TJoinSelect>(multipleJoin.DataContext, multipleJoin.Left, multipleJoin.Right, multipleJoin.On, multipleJoin.JoinType);
+            return new ModifiableMultipleJoin<TSource, TSelect, TJoinSelect>(multipleJoin.DataContext, multipleJoin.Left, multipleJoin.Right, multipleJoin.On, multipleJoin.JoinType);
         }
     }
 }

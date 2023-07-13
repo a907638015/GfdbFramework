@@ -6,8 +6,8 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageProjectUrl></PackageProjectUrl>
 		<RepositoryUrl>https://github.com/a907638015/GfdbFramework</RepositoryUrl>
-		<AssemblyVersion>2.0.6.1</AssemblyVersion>
-		<FileVersion>2.0.6.1</FileVersion>
+		<AssemblyVersion>2.0.7.1</AssemblyVersion>
+		<FileVersion>2.0.7.1</FileVersion>
 		<Authors>Gaofei.Wang</Authors>
 		<Description>一个用以弥补 Linq To Sql 各种先天不足的替补数据库操作框架</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

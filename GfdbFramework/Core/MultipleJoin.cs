@@ -96,14 +96,12 @@ namespace GfdbFramework.Core
     /// <summary>
     /// 多表关联操作类。
     /// </summary>
-    /// <typeparam name="TLeftSource">左数据源中的原始成员类型</typeparam>
     /// <typeparam name="TLeftSelect">左数据源中的每个成员类型</typeparam>
-    /// <typeparam name="TJoinSource">右数据源中的原始成员类型</typeparam>
     /// <typeparam name="TJoinSelect">右数据源中的每个成员类型</typeparam>
-    public class MultipleJoin<TLeftSource, TLeftSelect, TJoinSource, TJoinSelect> : MultipleJoin
+    public class MultipleJoin<TLeftSelect, TJoinSelect> : MultipleJoin
     {
         /// <summary>
-        /// 使用指定的操作上下文、左侧关联对象、右侧关联对象、关联条件字段以及关联类型初始化一个新的 <see cref="MultipleJoin{TLeftSource, TLeftSelect, TJoinSource, TJoinSelect}"/> 类实例。
+        /// 使用指定的操作上下文、左侧关联对象、右侧关联对象、关联条件字段以及关联类型初始化一个新的 <see cref="MultipleJoin{TLeftSelect, TJoinSelect}"/> 类实例。
         /// </summary>
         /// <param name="dataContext">所使用的操作上下文对象。</param>
         /// <param name="left">需要关联的左侧对象。</param>
@@ -123,9 +121,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联操作后新的操作对象。</returns>
-        public MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect> LeftJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSource, TJoinSource>, TRightSource, bool>> on)
+        public MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect> LeftJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect, bool>> on)
         {
-            return (MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>)Join(right, on, SourceType.LeftJoin, null);
+            return (MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>)Join(right, on, SourceType.LeftJoin, null);
         }
 
         /// <summary>
@@ -136,9 +134,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联操作后新的操作对象。</returns>
-        public MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect> RightJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSource, TJoinSource>, TRightSource, bool>> on)
+        public MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect> RightJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect, bool>> on)
         {
-            return (MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>)Join(right, on, SourceType.RightJoin, null);
+            return (MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>)Join(right, on, SourceType.RightJoin, null);
         }
 
         /// <summary>
@@ -149,9 +147,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联操作后新的操作对象。</returns>
-        public MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect> InnerJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSource, TJoinSource>, TRightSource, bool>> on)
+        public MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect> InnerJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect, bool>> on)
         {
-            return (MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>)Join(right, on, SourceType.InnerJoin, null);
+            return (MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>)Join(right, on, SourceType.InnerJoin, null);
         }
 
         /// <summary>
@@ -162,9 +160,9 @@ namespace GfdbFramework.Core
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <param name="on">对左右数据源进行条件关联的表达式树。</param>
         /// <returns>关联操作后新的操作对象。</returns>
-        public MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect> FullJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSource, TJoinSource>, TRightSource, bool>> on)
+        public MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect> FullJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right, Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect, bool>> on)
         {
-            return (MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>)Join(right, on, SourceType.FullJoin, null);
+            return (MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>)Join(right, on, SourceType.FullJoin, null);
         }
 
         /// <summary>
@@ -174,9 +172,9 @@ namespace GfdbFramework.Core
         /// <typeparam name="TRightSelect">右数据源中的每个成员类型。</typeparam>
         /// <param name="right">需要关联的右侧查询对象。</param>
         /// <returns>关联操作后新的操作对象。</returns>
-        public MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect> CrossJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right)
+        public MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect> CrossJoin<TRightSource, TRightSelect>(Queryable<TRightSource, TRightSelect> right)
         {
-            return (MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>)Join(right, null, SourceType.CrossJoin, null);
+            return (MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>)Join(right, null, SourceType.CrossJoin, null);
         }
 
         /// <summary>
@@ -197,6 +195,9 @@ namespace GfdbFramework.Core
 
             BasicDataSource rightDataSource = (BasicDataSource)right.DataSource.Copy(new Dictionary<DataSource.DataSource, DataSource.DataSource>(), new Dictionary<Field.Field, Field.Field>(), ref nextTableAliasIndex);
 
+            if (rightDataSource.SelectField == null && (rightDataSource.Type == SourceType.View || rightDataSource.Type == SourceType.Table) && (rightDataSource.Limit.HasValue || (rightDataSource.SortItems != null && rightDataSource.SortItems.Count > 0) || (rightDataSource.GroupFields != null && rightDataSource.GroupFields.Count > 0) || rightDataSource.IsDistinctly || rightDataSource.Where != null))
+                rightDataSource = rightDataSource.SetSelectField(rightDataSource.RootField.ToQuoteField(rightDataSource.Alias, new Dictionary<Field.Field, Field.Field>(), true));
+
             if (on != null)
             {
                 Dictionary<string, DataSource.DataSource> parameters = new Dictionary<string, DataSource.DataSource>();
@@ -212,10 +213,10 @@ namespace GfdbFramework.Core
                 parameters[on.Parameters[0].Name] = ToDataSource();
                 parameters[on.Parameters[1].Name] = rightDataSource;
 
-                onField = (BasicField)Helper.ExtractField(DataContext, on.Body, ExtractWay.Other, parameters, ref nextTableAliasIndex);
+                onField = (BasicField)Helper.ExtractField(DataContext, on.Body, ExtractWay.SelectNew, parameters, ref nextTableAliasIndex);
             }
 
-            return new MultipleJoin<JoinItem<TLeftSource, TJoinSource>, JoinItem<TLeftSelect, TJoinSelect>, TRightSource, TRightSelect>(DataContext, ToDataSource(), rightDataSource, onField, joinType);
+            return new MultipleJoin<JoinItem<TLeftSelect, TJoinSelect>, TRightSelect>(DataContext, ToDataSource(), rightDataSource, onField, joinType);
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace GfdbFramework.Core
         /// <param name="where">查询操作的条件限定表达式树。</param>
         /// <param name="selector">对数据源进行查询操作的表达式树。</param>
         /// <returns>查询后新的操作对象。</returns>
-        public Queryable<TResult, TResult> Select<TResult>(Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TResult>> selector, Expression<Func<JoinItem<TLeftSource, TLeftSource>, bool>> where)
+        public Queryable<TResult, TResult> Select<TResult>(Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, TResult>> selector, Expression<Func<JoinItem<TLeftSelect, TJoinSelect>, bool>> where)
         {
             return Select<TResult>(selector, where, null);
         }
@@ -313,7 +314,7 @@ namespace GfdbFramework.Core
 
             BasicField on = (BasicField)On?.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
 
-            return new MultipleJoin<TLeftSource, TLeftSelect, TJoinSource, TJoinSelect>(DataContext, left, (BasicDataSource)right, on, JoinType);
+            return new MultipleJoin<TLeftSelect, TJoinSelect>(DataContext, left, (BasicDataSource)right, on, JoinType);
         }
     }
 }
