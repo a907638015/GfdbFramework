@@ -40,6 +40,7 @@ namespace GfdbFramework.Core
         private static readonly string _JointItemLeftPropName = nameof(JoinItem<int, int>.Left);
         private static readonly string _JointItemRightPropName = nameof(JoinItem<int, int>.Right);
         private static readonly string _NullableValuePropName = nameof(Nullable<int>.Value);
+        private static readonly string _NullableHasValuePropName = nameof(Nullable<int>.HasValue);
         private static readonly string _ArrayLengthPropName = nameof(Array.Length);
         private static readonly string _ListCountPropName = nameof(List<int>.Count);
         private static readonly string _DBFunAddMillisecondMethodName = nameof(DBFun.AddMillisecond);
@@ -977,6 +978,11 @@ namespace GfdbFramework.Core
                         else if (exampleField.Type != FieldType.Constant && memberExpression.Member.MemberType == MemberTypes.Property && memberExpression.Member.Name == _NullableValuePropName && memberExpression.Member.ReflectedType.IsGenericType && memberExpression.Member.ReflectedType.GetGenericTypeDefinition() == _NullableType)
                         {
                             resultField = exampleField;
+                        }
+                        //如果是 Nullable 类型的 HasValue 属性，则将其改造为二元操作字段
+                        else if (exampleField.Type != FieldType.Constant && memberExpression.Member.MemberType == MemberTypes.Property && memberExpression.Member.Name == _NullableHasValuePropName && memberExpression.Member.ReflectedType.IsGenericType && memberExpression.Member.ReflectedType.GetGenericTypeDefinition() == _NullableType)
+                        {
+                            resultField = new BinaryField(dataContext, body.Type, OperationType.NotEqual, (BasicField)exampleField, new ConstantField(dataContext, exampleField.DataType, null));
                         }
                         else if (exampleField.Type == FieldType.Collection && ((memberExpression.Member.Name == _ArrayLengthPropName && exampleField.DataType.IsArray) || (memberExpression.Member.Name == _ListCountPropName && exampleField.DataType.CheckIsList())))
                         {
