@@ -1,4 +1,6 @@
-﻿using GfdbFramework.Interface;
+﻿using GfdbFramework.Core;
+using GfdbFramework.Field;
+using GfdbFramework.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,7 +39,39 @@ namespace GfdbFramework.DataSource
         {
             if (!copiedDataSources.TryGetValue(this, out DataSource self))
             {
-                self = new UnionDataSource(DataContext, (BasicDataSource)Main.Copy(copiedDataSources, copiedFields, ref startAliasIndex), (BasicDataSource)Affiliation.Copy(copiedDataSources, copiedFields, ref startAliasIndex), UnionType, startAliasIndex++);
+                Field.Field selectField = SelectField?.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
+                BasicField whereField = (BasicField)Where?.Copy(copiedDataSources, copiedFields, ref startAliasIndex);
+                List<SortItem> sortItems = null;
+                List<BasicField> groupFields = null;
+
+
+                if (SortItems != null && SortItems.Count > 0)
+                {
+                    sortItems = new List<SortItem>();
+
+                    foreach (var item in SortItems)
+                    {
+                        sortItems.Add(new SortItem((BasicField)item.Field.Copy(copiedDataSources, copiedFields, ref startAliasIndex), item.Type));
+                    }
+                }
+
+                if (GroupFields != null && GroupFields.Count > 0)
+                {
+                    groupFields = new List<BasicField>();
+
+                    foreach (var item in GroupFields)
+                    {
+                        groupFields.Add((BasicField)item.Copy(copiedDataSources, copiedFields, ref startAliasIndex));
+                    }
+                }
+
+                self = new UnionDataSource(DataContext, (BasicDataSource)Main.Copy(copiedDataSources, copiedFields, ref startAliasIndex), (BasicDataSource)Affiliation.Copy(copiedDataSources, copiedFields, ref startAliasIndex), UnionType, startAliasIndex++)
+                    .AddLimit(Limit)
+                    .SetSelectField(selectField)
+                    .AddWhere(whereField)
+                    .SetDistinctly(IsDistinctly)
+                    .SetSortItems(sortItems)
+                    .SetGroupFields(groupFields);
 
                 copiedDataSources[this] = self;
             }
@@ -61,7 +95,13 @@ namespace GfdbFramework.DataSource
         /// <returns>复制好的新数据源信息。</returns>
         internal protected override BasicDataSource ShallowCopy()
         {
-            return new UnionDataSource(DataContext, Main, Affiliation, UnionType, AliasIndex);
+            return new UnionDataSource(DataContext, Main, Affiliation, UnionType, AliasIndex)
+                .AddLimit(Limit)
+                .AddWhere(Where)
+                .SetDistinctly(IsDistinctly)
+                .SetSelectField(SelectField)
+                .SetSortItems(SortItems)
+                .SetGroupFields(GroupFields); ;
         }
 
         /// <summary>
