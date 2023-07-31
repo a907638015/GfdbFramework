@@ -398,8 +398,8 @@ namespace GfdbFramework.Core
 
                                         Queryable rightQueryable = (Queryable)((ConstantField)methodParameters[0]).Value;
                                         LambdaExpression selectorLambda = (LambdaExpression)((ConstantField)methodParameters[1]).Value;
-                                        LambdaExpression onLambda = methodParameters.Length > 2 ? null : (LambdaExpression)((ConstantField)methodParameters[2]).Value;
-                                        LambdaExpression whereLambda = methodParameters.Length > 3 ? null : (LambdaExpression)((ConstantField)methodParameters[3]).Value;
+                                        LambdaExpression onLambda = methodParameters.Length > 2 ? (LambdaExpression)((ConstantField)methodParameters[2]).Value : null;
+                                        LambdaExpression whereLambda = methodParameters.Length > 3 ? (LambdaExpression)((ConstantField)methodParameters[3]).Value: null;
 
                                         //修改 Join 泛型方法的类型为待执行 Join 方法的泛型
                                         MethodInfo methodInfo = _QueryableJoinMethod1.MakeGenericMethod(methodCallExpression.Method.GetGenericArguments()[0]);
