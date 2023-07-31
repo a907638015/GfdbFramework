@@ -238,34 +238,30 @@ namespace GfdbFramework.Core
                 }
             }
 
-            parameters[where.Parameters[0].Name] = DataSource;
+            BasicDataSource dataSource;
+
+            if (DataSource.GroupFields == null || DataSource.GroupFields.Count < 1)
+            {
+                dataSource = DataSource.ShallowCopy();
+            }
+            else
+            {
+                var convertedFields = new Dictionary<Field.Field, Field.Field>();
+
+                var selectField = (DataSource.SelectField ?? DataSource.RootField).ToQuoteField(DataSource, convertedFields);
+                var rootField = DataSource.RootField.ToQuoteField(DataSource, convertedFields);
+
+                dataSource = new SelectDataSource(DataContext, selectField, rootField, DataSource, nextTableAliasIndex);
+            }
+
+            parameters[where.Parameters[0].Name] = dataSource;
 
             Field.Field field = Helper.ExtractField(DataContext, where.Body, ExtractWay.Other, parameters, ref nextTableAliasIndex);
 
             if (field is BasicField basicField)
-            {
-                BasicDataSource dataSource;
-
-                if (DataSource.GroupFields == null || DataSource.GroupFields.Count < 1)
-                {
-                    dataSource = DataSource.ShallowCopy().AddWhere(basicField);
-                }
-                else
-                {
-                    var convertedFields = new Dictionary<Field.Field, Field.Field>();
-
-                    var selectField = (DataSource.SelectField ?? DataSource.RootField).ToQuoteField(DataSource, convertedFields);
-                    var rootField = DataSource.RootField.ToQuoteField(DataSource, convertedFields);
-
-                    dataSource = new SelectDataSource(DataContext, selectField, rootField, DataSource, nextTableAliasIndex).AddWhere(basicField);
-                }
-
-                return new Queryable<TSource, TSelect>(DataContext, dataSource);
-            }
+                return new Queryable<TSource, TSelect>(DataContext, dataSource.AddWhere(basicField));
             else
-            {
                 throw new Exception($"在对数据源进行 Where 条件筛选时未能正确提取到限定字段信息，具体表达式为：{where}");
-            }
         }
 
         /// <summary>
