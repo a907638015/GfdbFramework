@@ -2,12 +2,12 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net40;net45;net452;net461;net472</TargetFrameworks>
-		<Version>2.0.9</Version>
+		<Version>2.0.10-beta</Version>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageProjectUrl></PackageProjectUrl>
 		<RepositoryUrl>https://github.com/a907638015/GfdbFramework</RepositoryUrl>
-		<AssemblyVersion>2.0.9.1</AssemblyVersion>
-		<FileVersion>2.0.9.1</FileVersion>
+		<AssemblyVersion>2.0.10.1</AssemblyVersion>
+		<FileVersion>2.0.10.1</FileVersion>
 		<Authors>Gaofei.Wang</Authors>
 		<Description>一个用以弥补 Linq To Sql 各种先天不足的替补数据库操作框架</Description>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
