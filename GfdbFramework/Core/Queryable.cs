@@ -248,7 +248,7 @@ namespace GfdbFramework.Core
             {
                 var convertedFields = new Dictionary<Field.Field, Field.Field>();
 
-                var selectField = (DataSource.SelectField ?? DataSource.RootField).ToQuoteField(DataSource, convertedFields);
+                var selectField = (DataSource.SelectField ?? DataSource.RootField).ToQuoteField(DataSource.Alias, convertedFields, true);
                 var rootField = DataSource.RootField.ToQuoteField(DataSource, convertedFields);
 
                 dataSource = new SelectDataSource(DataContext, selectField, rootField, DataSource, nextTableAliasIndex);
