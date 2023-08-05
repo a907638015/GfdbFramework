@@ -476,7 +476,7 @@ namespace GfdbFramework.Core
                                         var selectField = queryable.DataSource.SelectField ?? queryable.DataSource.RootField;
 
                                         if (selectField.Type != FieldType.DefaultOrValue && methodCallExpression.Method.Name != _QueryableFirstMethodName)
-                                            selectField = new IsolateField(dataContext, FieldType.DefaultOrValue, (BasicField)selectField);
+                                            selectField = new BinaryField(dataContext, selectField.DataType, OperationType.Coalesce, (BasicField)selectField, new ConstantField(dataContext, selectField.DataType, GetDefaultValue(selectField.DataType)));
 
                                         startDataSourceAliasIndex = queryable.DataSource.AliasIndex + 1;
 
@@ -500,7 +500,7 @@ namespace GfdbFramework.Core
                                         var selectField = queryable.DataSource.SelectField ?? queryable.DataSource.RootField;
 
                                         if (selectField.Type != FieldType.DefaultOrValue && methodCallExpression.Method.Name != _QueryableLastMethodName)
-                                            selectField = new IsolateField(dataContext, FieldType.DefaultOrValue, (BasicField)selectField);
+                                            selectField = new BinaryField(dataContext, selectField.DataType, OperationType.Coalesce, (BasicField)selectField, new ConstantField(dataContext, selectField.DataType, GetDefaultValue(selectField.DataType)));
 
                                         startDataSourceAliasIndex = queryable.DataSource.AliasIndex + 1;
 
@@ -1521,6 +1521,41 @@ namespace GfdbFramework.Core
                 return (T)attrs[0];
 
             return null;
+        }
+
+        /// <summary>
+        /// 获取指定基础类型的默认值。
+        /// </summary>
+        /// <param name="type">待获取默认值的基础数据类型。</param>
+        /// <returns>返回该基础数据类型的默认值。</returns>
+        private static object GetDefaultValue(Type type)
+        {
+            object defaultValue = 0;
+
+            switch (type.FullName)
+            {
+                case "System.Int16":
+                case "System.UInt16":
+                case "System.Int32":
+                case "System.UInt32":
+                case "System.Int64":
+                case "System.UInt64":
+                case "System.Byte":
+                case "System.SByte":
+                case "System.Single":
+                case "System.Double":
+                case "System.Decimal":
+                    defaultValue = 0;
+                    break;
+                case "System.Boolean":
+                    defaultValue = false;
+                    break;
+                default:
+                    defaultValue = null;
+                    break;
+            }
+
+            return defaultValue;
         }
 
         /// <summary>
